@@ -95,7 +95,28 @@ private:
 };
 
 
+bool menu(int& clock,int& high){
+    bool out = false;
 
+
+
+    if (IsKeyPressed(KEY_ENTER)){
+        out =true;
+    }
+
+    BeginDrawing();
+    ClearBackground(SKYBLUE);
+
+
+    if (high != 0){
+        DrawText(("High Score: "+std::to_string(high/60)).c_str(), 200, 34, 24, ORANGE);
+    }
+
+
+    EndDrawing();
+
+    return out;
+}
 
 
 int main(void)
@@ -115,10 +136,32 @@ int main(void)
     int attackTimerMax= 65;
     int attackTimer =0;
     int clock = 0;
+    int high = 0;
+
+    bool menuflag = true;
 
 
     while (!WindowShouldClose())
     {
+
+        if (clock>high){
+            high=clock;
+        }
+
+        if (menuflag){
+            if (menu(clock,high)){
+                for(int i =0;i<attacks.size();i++){
+                    delete attacks[i];
+                }
+                attacks.clear();
+                menuflag = false;
+                attackTimerMax = 65;
+                clock =0;
+            }
+            continue;
+        }
+
+
 
         clock++;
 
@@ -155,7 +198,7 @@ int main(void)
         }
 
         if (collied){
-            player.color = GREEN;
+            menuflag = true;
         }
 
         player.movePlayer();
@@ -168,6 +211,9 @@ int main(void)
 
 
         DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
+        DrawText(("Time: "+std::to_string(clock/60)).c_str(), 10, 34, 24, DARKGRAY);
+        DrawText(("High: "+std::to_string(high/60)).c_str(), 10, 56, 24, DARKGRAY);
+
 
         player.drawPlayer();
 
