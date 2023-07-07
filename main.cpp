@@ -5,11 +5,15 @@
 
 const int SCREENWIDTH = 800;
 const int SCREENHEIGHT = 450;
+const int XUPPER = 720;
+const int XLOWER = 80;
+const int YUPPER = 417;
+const int YLOWER = 33;
 
 class Player{
 private:
     Vector2 playerPos;
-    float speed = 6.0f;
+    float speed = 8.0f;
     int radius = 20;
 public:
     Color color = RED;
@@ -44,17 +48,17 @@ public:
 
         tempVect = Vector2Add(playerPos, tempVect);
 
-        if(tempVect.x + radius > SCREENWIDTH){
-            tempVect.x = SCREENWIDTH - radius;
+        if(tempVect.x + radius > XUPPER){
+            tempVect.x = XUPPER - radius;
         }
-        if(tempVect.x - radius < 0){
-            tempVect.x = 0 + radius;
+        if(tempVect.x - radius < XLOWER){
+            tempVect.x = XLOWER + radius;
         }
-        if(tempVect.y + radius > SCREENHEIGHT){
-            tempVect.y = SCREENHEIGHT - radius;
+        if(tempVect.y + radius > YUPPER){
+            tempVect.y = YUPPER- radius;
         }
-        if(tempVect.y - radius < 0){
-            tempVect.y = 0 + radius;
+        if(tempVect.y - radius < YLOWER){
+            tempVect.y = YLOWER + radius;
         }
 
         playerPos = tempVect;
@@ -112,20 +116,15 @@ bool menu(int& clock,int& high){
         DrawText(("High Score: "+std::to_string(high/60)).c_str(), 200, 34, 24, ORANGE);
     }
 
-
     EndDrawing();
 
     return out;
 }
 
 
-int main(void)
-{
+int main(){
 
-    const int screenWidth = 800;
-    const int screenHeight = 450;
-
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - keyboard input");
+    InitWindow(SCREENWIDTH, SCREENHEIGHT, "raylib [core] example - keyboard input");
 
     Player player = Player();
 
@@ -208,7 +207,8 @@ int main(void)
 
         ClearBackground(RAYWHITE);
 
-
+        DrawRectangleLines(80, 33, 640, 384, BLACK);
+        DrawRectangleLines(100, 53, 620, 364, RED);
 
         DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
         DrawText(("Time: "+std::to_string(clock/60)).c_str(), 10, 34, 24, DARKGRAY);
