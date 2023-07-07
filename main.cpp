@@ -144,6 +144,12 @@ int main(){
 
     InitWindow(SCREENWIDTH, SCREENHEIGHT, "raylib [core] example - keyboard input");
 
+    InitAudioDevice();
+
+    Music Track1 = LoadMusicStream("assets/2023 game jam music 1.wav");
+
+    PlayMusicStream(Track1);
+
     Player player = Player();
 
     SetTargetFPS(60);
@@ -160,6 +166,8 @@ int main(){
 
     while (!WindowShouldClose())
     {
+
+        UpdateMusicStream(Track1);
 
         if (clock>high){
             high=clock;
@@ -245,7 +253,7 @@ int main(){
 
     }
 
-
+    CloseAudioDevice();
     CloseWindow();
 
     return 0;
