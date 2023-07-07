@@ -1,7 +1,7 @@
 #include <raylib.h>
+#include <raymath.h>
 #include <vector>
 #include <iostream>
-#include <raymath.h>
 
 const int SCREENWIDTH = 800;
 const int SCREENHEIGHT = 450;
@@ -9,7 +9,7 @@ const int SCREENHEIGHT = 450;
 class Player{
 private:
     Vector2 playerPos;
-    float speed = 10.0f;
+    float speed = 6.0f;
     int radius = 20;
 public:
     Color color = RED;
@@ -74,7 +74,7 @@ public:
     attack(){
         start={(float)(std::rand()%800),(float)(std::rand()%450)};
         end={(float)(std::rand()%800),(float)(std::rand()%450)};
-        cooldown =120;
+        cooldown =60;
     }
 
     void draw() {
@@ -112,12 +112,19 @@ int main(void)
 
     std::vector<attack*> attacks;
     attacks.push_back(new attack());
-    int attackTimerMax= 180;
+    int attackTimerMax= 65;
     int attackTimer =0;
+    int clock = 0;
 
 
     while (!WindowShouldClose())
     {
+
+        clock++;
+
+        if (clock%300 == 0){
+            attackTimerMax--;
+        }
 
 
         attackTimer++;
@@ -125,7 +132,12 @@ int main(void)
         if (attackTimer>attackTimerMax){
             attackTimer = 0;
             attacks.push_back(new attack());
-            attackTimerMax--;
+            while (!CheckCollisionPointLine(player.getPlayerPos(),attacks.back()->start,attacks.back()->end,50)){
+                delete attacks.back();
+                attacks.pop_back();
+                attacks.push_back(new attack());
+            }
+
         }
 
         bool collied = false;
@@ -137,7 +149,7 @@ int main(void)
                 break;
             }
             if (!collied && attacks[i]->cooldown <0){
-                collied = CheckCollisionPointLine(player.getPlayerPos(),attacks[i]->start,attacks[i]->end,70);
+                collied = CheckCollisionPointLine(player.getPlayerPos(),attacks[i]->start,attacks[i]->end,50);
             }
 
         }
