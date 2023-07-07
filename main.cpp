@@ -83,7 +83,25 @@ public:
 
     void draw() {
         if (cooldown > 0){
-            DrawLineEx(start,end,30,GRAY);
+//            DrawLineEx(start,end,30,GRAY);
+            int Distance = Vector2Distance(start,end);
+            Vector2 dir  = Vector2Normalize(Vector2Subtract(end,start));
+            Vector2 along = start;
+            Vector2 Normal = Vector2Rotate(dir,90.0*DEG2RAD);
+            Vector2 tempNormal;
+            Vector2 Middle = Vector2Subtract(end,start);
+            Middle = Vector2Add(start, Vector2Scale(Middle,0.5));
+            for (int i=0;i<Distance;i++)
+            {
+                tempNormal = Normal;
+                tempNormal = Vector2Scale(tempNormal,-15+ std::rand()%30);
+                tempNormal = Vector2Scale(tempNormal,((Distance/2)- Vector2Distance(Middle,along))/(Distance/2));
+
+                along = Vector2Add(along,dir);
+                DrawRectangleV(Vector2Add(along,tempNormal),Vector2 {5,5},Color {0 ,100,125,(unsigned char) (200.0f* (15.0f-Vector2Distance(along,Vector2Add(along,tempNormal)))/15.0f)});
+            }
+            DrawRectangleV(Middle,Vector2 {15,15},GREEN);
+
         } else {
             DrawLineEx(start,end,30,RED);
         }
@@ -210,9 +228,6 @@ int main(){
         DrawRectangleLines(80, 33, 640, 384, BLACK);
         DrawRectangleLines(100, 53, 620, 364, RED);
 
-        DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
-        DrawText(("Time: "+std::to_string(clock/60)).c_str(), 10, 34, 24, DARKGRAY);
-        DrawText(("High: "+std::to_string(high/60)).c_str(), 10, 56, 24, DARKGRAY);
 
 
         player.drawPlayer();
@@ -220,6 +235,10 @@ int main(){
         for (int i=0;i<attacks.size();i++){
             attacks[i]->draw();
         }
+
+        DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
+        DrawText(("Time: "+std::to_string(clock/60)).c_str(), 10, 34, 24, DARKGRAY);
+        DrawText(("High: "+std::to_string(high/60)).c_str(), 10, 56, 24, DARKGRAY);
 
 
         EndDrawing();
