@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <vector>
 #include <iostream>
+#include <raymath.h>
 
 const int SCREENWIDTH = 800;
 const int SCREENHEIGHT = 450;
@@ -9,6 +10,7 @@ class Player{
 private:
     Vector2 playerPos;
     float speed = 10.0f;
+    int radius = 20;
 public:
     Color color = RED;
     Vector2 getPlayerPos() {
@@ -19,28 +21,47 @@ public:
     Player(){
         playerPos = {(float)SCREENWIDTH/2, (float)SCREENHEIGHT/2 };
     }
-    void moveLeft(){
-        if(playerPos.x - speed >= 40){
-            playerPos.x -= speed;
+    void movePlayer(){
+
+        Vector2 tempVect = {(float)0, (float)0};
+
+        if(IsKeyDown(KEY_W)){
+            tempVect.y -= 1.0f;
         }
-    }
-    void moveRight(){
-        if(playerPos.x + speed <= SCREENWIDTH - 40) {
-            playerPos.x += speed;
+        if(IsKeyDown(KEY_S)){
+            tempVect.y += 1.0f;
         }
-    }
-    void moveUp(){
-        if(playerPos.y - speed >= 40){
-            playerPos.y -= speed;
+        if(IsKeyDown(KEY_A)){
+            tempVect.x -= 1.0f;
         }
-    }
-    void moveDown(){
-        if(playerPos.y + speed <= SCREENHEIGHT - 40){
-            playerPos.y += speed;
+        if(IsKeyDown(KEY_D)){
+            tempVect.x += 1.0f;
         }
+
+        tempVect = Vector2Normalize(tempVect);
+
+        tempVect = Vector2Scale(tempVect, speed);
+
+        tempVect = Vector2Add(playerPos, tempVect);
+
+        if(tempVect.x + radius > SCREENWIDTH){
+            tempVect.x = SCREENWIDTH - radius;
+        }
+        if(tempVect.x - radius < 0){
+            tempVect.x = 0 + radius;
+        }
+        if(tempVect.y + radius > SCREENHEIGHT){
+            tempVect.y = SCREENHEIGHT - radius;
+        }
+        if(tempVect.y - radius < 0){
+            tempVect.y = 0 + radius;
+        }
+
+        playerPos = tempVect;
+
     }
     void drawPlayer(){
-        DrawCircle(playerPos.x, playerPos.y, 40, color);
+        DrawCircle(playerPos.x, playerPos.y, radius, color);
     }
 };
 
@@ -97,18 +118,7 @@ int main(void)
 
     while (!WindowShouldClose())
     {
-        if(IsKeyDown(KEY_W)){
-            player.moveUp();
-        }
-        if(IsKeyDown(KEY_S)){
-            player.moveDown();
-        }
-        if(IsKeyDown(KEY_A)){
-            player.moveLeft();
-        }
-        if(IsKeyDown(KEY_D)){
-            player.moveRight();
-        }
+
 
         attackTimer++;
 
@@ -135,6 +145,8 @@ int main(void)
         if (collied){
             player.color = GREEN;
         }
+
+        player.movePlayer();
 
 
         BeginDrawing();
