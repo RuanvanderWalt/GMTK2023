@@ -1,6 +1,6 @@
 file(COPY assets DESTINATION .)
 
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.25)
 project(gmtk2023)
 
 include_directories("/usr/local/include")
