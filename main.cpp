@@ -479,7 +479,7 @@ int main(){
 
             UpdateMusicStream(Track1);
 
-            if (wineSplater == nullptr) {
+            if (wineSplater == nullptr && !menuflag) {
                 wineCooldown+=elaspedframe;
             }
 
@@ -503,6 +503,11 @@ int main(){
                     clock = 0;
                     player.totalElasped = 0;
                     player.resetPlayer();
+                    wineCooldown = 0;
+                    if(wineSplater != nullptr){
+                        delete wineSplater;
+                        wineSplater = nullptr;
+                    }
                 }
                 continue;
             }
