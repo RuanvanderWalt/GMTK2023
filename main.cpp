@@ -16,6 +16,7 @@ Sound dash;
 Texture2D wineBig;
 Texture2D wineMedium;
 Texture2D wineSmall;
+Texture2D wineLarge;
 Texture2D waring;
 Texture2D dashTexture;
 
@@ -413,14 +414,8 @@ public:
     void draw(){
         for (int i =0;i<splats.size();i++){
             //DrawCircle(splats[i]->pos.x,splats[i]->pos.y,splats[i]->radius,Color {255,255,0,127});
+            DrawTexturePro(wineLarge,Rectangle {0,0,128,128},Rectangle {splats[i]->pos.x,splats[i]->pos.y,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {(float)splats[i]->radius,(float)splats[i]->radius},splats[i]->angle,Color {255,255,255,255});
 
-            if(splats[i]->radius > 64){
-                DrawTexturePro(wineBig,Rectangle {0,0,64,64},Rectangle {splats[i]->pos.x,splats[i]->pos.y,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {(float)splats[i]->radius,(float)splats[i]->radius},splats[i]->angle,Color {255,255,255,255});
-            } else if (splats[i]->radius > 32){
-                DrawTexturePro(wineMedium,Rectangle {0,0,32,32},Rectangle {splats[i]->pos.x,splats[i]->pos.y,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {(float)splats[i]->radius,(float)splats[i]->radius},splats[i]->angle,Color {255,255,255,255});
-            } else {
-                DrawTexturePro(wineSmall,Rectangle {0,0,16,16},Rectangle {splats[i]->pos.x,splats[i]->pos.y,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {(float)splats[i]->radius,(float)splats[i]->radius},splats[i]->angle,Color {255,255,255,255});
-            }
 
 
         }
@@ -487,6 +482,7 @@ int main(){
     wineSmall = LoadTexture("assets/wine_small.png");
     waring = LoadTexture("assets/Slash_effect.png");
     dashTexture = LoadTexture("assets/dash_indicator.png");
+    wineLarge = LoadTexture( "assets/wine_large.png");
 
 
     Music Track1 = LoadMusicStream("assets/2023 game jam music v2.wav");
