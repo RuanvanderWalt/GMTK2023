@@ -23,6 +23,9 @@ public:
     Vector2 getPlayerPos() {
         return playerPos;
     }
+    int getRadius(){
+        return radius;
+    }
 
 
     Player(){
@@ -134,8 +137,8 @@ public:
 
     }
 
-    void update(){
-        cooldown--;
+    void update(int elaspedframes){
+        cooldown-=elaspedframes;
     }
 
 private:
@@ -143,11 +146,63 @@ private:
 };
 
 
+struct Splat {
+    Vector2 pos;
+    int radius;
+    Splat(Vector2 p,int r){
+        pos = p;
+        radius = r;
+    }
+};
+
+class WineSplater {
+private:
+public:
+    int cooldown;
+    std::vector<Splat*> splats;
+    WineSplater(){
+        int Count = GetRandomValue(3,10);
+        for (int i =0;i<Count;i++){
+            splats.push_back(new Splat(Vector2 {(float)GetRandomValue(200,600),(float)GetRandomValue(100,350)},
+                                       GetRandomValue(10,100)));
+        }
+        cooldown = 180;
+    }
+    ~WineSplater() {
+        for (int i =0;i<splats.size();i++){
+            delete splats[i];
+        }
+        splats.clear();
+    }
+    void draw(){
+        for (int i =0;i<splats.size();i++){
+            DrawCircle(splats[i]->pos.x,splats[i]->pos.y,splats[i]->radius,PURPLE);
+        }
+    }
+    void EffectPlayer(Player &player){
+        bool shouldAffect = false;
+        for (int i=0;i<splats.size();i++){
+            if (CheckCollisionCircles(splats[i]->pos,splats[i]->radius,player.getPlayerPos(),player.getRadius())){
+                shouldAffect = true;
+                break;
+            }
+        }
+
+        if (shouldAffect){
+            player.color = PURPLE;
+        }
+
+    }
+
+
+    void update (int elaspedframes){
+        cooldown-=elaspedframes;
+    }
+};
+
+
 bool menu(int& clock,int& high){
     bool out = false;
-
-
-
     if (IsKeyPressed(KEY_ENTER)){
         out =true;
     }
@@ -180,103 +235,142 @@ int main(){
 
     SetTargetFPS(60);
 
+    WineSplater* wineSplater = nullptr;
     std::vector<attack*> attacks;
     attacks.push_back(new attack());
     int attackTimerMax= 65;
     int attackTimer =0;
     int clock = 0;
     int high = 0;
+    int wineCooldown = 0;
 
     bool menuflag = true;
 
+    double time = GetTime();
+    int elaspedframe = 1;
 
     while (!WindowShouldClose())
     {
+            elaspedframe = 0;
+            elaspedframe = (GetTime()-time)*60;
+            time = GetTime();
 
-        UpdateMusicStream(Track1);
+            UpdateMusicStream(Track1);
 
-        if (clock>high){
-            high=clock;
-        }
+            if (wineSplater == nullptr) {
+                wineCooldown+=elaspedframe;
+            }
 
-        if (menuflag){
-            if (menu(clock,high)){
-                for(int i =0;i<attacks.size();i++){
-                    delete attacks[i];
+            if (wineCooldown >= 600) {
+                wineSplater = new WineSplater();
+                wineCooldown = 0;
+            }
+
+            if (clock > high) {
+                high = clock;
+            }
+
+            if (menuflag) {
+                if (menu(clock, high)) {
+                    for (int i = 0; i < attacks.size(); i++) {
+                        delete attacks[i];
+                    }
+                    attacks.clear();
+                    menuflag = false;
+                    attackTimerMax = 65;
+                    clock = 0;
                 }
-                attacks.clear();
-                menuflag = false;
-                attackTimerMax = 65;
-                clock =0;
+                continue;
             }
-            continue;
-        }
 
 
+            clock+=elaspedframe;
 
-        clock++;
-
-        if (clock%300 == 0){
-            attackTimerMax--;
-        }
+            if (clock % 300 == 0) {
+                attackTimerMax-=elaspedframe;
+            }
 
 
-        attackTimer++;
+            attackTimer+=elaspedframe;
 
-        if (attackTimer>attackTimerMax){
-            attackTimer = 0;
-            attacks.push_back(new attack());
-            while (!CheckCollisionPointLine(player.getPlayerPos(),attacks.back()->start,attacks.back()->end,50)){
-                delete attacks.back();
-                attacks.pop_back();
+            if (attackTimer > attackTimerMax) {
+                attackTimer = 0;
                 attacks.push_back(new attack());
+                while (!CheckCollisionPointLine(player.getPlayerPos(), attacks.back()->start, attacks.back()->end,
+                                                50)) {
+                    delete attacks.back();
+                    attacks.pop_back();
+                    attacks.push_back(new attack());
+                }
+
             }
 
-        }
+            bool collied = false;
 
-        bool collied = false;
+            for (int i = 0; i < attacks.size(); i++) {
+                attacks[i]->update(elaspedframe);
+                if (attacks[i]->cooldown < -30) {
+                    attacks.erase(std::next(attacks.begin(), i));
+                    break;
+                }
+                if (!collied && attacks[i]->cooldown < 0) {
+                    collied = CheckCollisionPointLine(player.getPlayerPos(), attacks[i]->start, attacks[i]->end, 50);
+                }
 
-        for (int i=0;i<attacks.size();i++){
-            attacks[i]->update();
-            if (attacks[i]->cooldown < -30){
-                attacks.erase(std::next(attacks.begin(), i));
-                break;
             }
-            if (!collied && attacks[i]->cooldown <0){
-                collied = CheckCollisionPointLine(player.getPlayerPos(),attacks[i]->start,attacks[i]->end,50);
+
+            if (collied) {
+                menuflag = true;
             }
 
-        }
 
-        if (collied){
-            menuflag = true;
-        }
+            player.color = RED;
+            if (wineSplater != nullptr) {
+                if (wineSplater->cooldown < 0) {
+                    delete wineSplater;
+                    wineSplater = nullptr;
+                }
+                if (wineSplater != nullptr) {
+                    wineSplater->update(elaspedframe);
+                    wineSplater->EffectPlayer(player);
+                }
+            }
 
-        player.movePlayer();
+            for (int i =0;i<elaspedframe;i++) {
+                player.movePlayer();
+            }
 
 
-        BeginDrawing();
+            BeginDrawing();
 
-        ClearBackground(RAYWHITE);
+            ClearBackground(RAYWHITE);
 
-        DrawRectangleLines(80, 33, 640, 384, BLACK);
-        DrawRectangleLines(100, 53, 620, 364, RED);
+            DrawRectangleLines(80, 33, 640, 384, BLACK);
+            DrawRectangleLines(100, 53, 620, 364, RED);
+
+            if (wineSplater != nullptr) {
+
+                wineSplater->draw();
+            }
 
 
 
-        player.drawPlayer();
+                player.drawPlayer();
 
-        for (int i=0;i<attacks.size();i++){
-            attacks[i]->draw();
-        }
 
-        DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
-        DrawText(("Time: "+std::to_string(clock/60)).c_str(), 10, 34, 24, DARKGRAY);
-        DrawText(("High: "+std::to_string(high/60)).c_str(), 10, 56, 24, DARKGRAY);
+            for (int i = 0; i < attacks.size(); i++) {
+                attacks[i]->draw();
+            }
+
+            DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
+            DrawText(("Time: " + std::to_string(clock / 60)).c_str(), 10, 34, 24, DARKGRAY);
+            DrawText(("High: " + std::to_string(high / 60)).c_str(), 10, 56, 24, DARKGRAY);
         DrawText(("Dash Cooldown: " + std::to_string((float)player.getDashCooldown()/60)).c_str(), 10, 94, 24, DARKGRAY);
 
 
-        EndDrawing();
+            EndDrawing();
+
+
 
     }
 
