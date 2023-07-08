@@ -15,6 +15,9 @@ private:
     Vector2 playerPos;
     float speed = 8.0f;
     int radius = 20;
+    int nextDashCooldown = 0;
+    bool dashNext = false;
+
 public:
     Color color = RED;
     Vector2 getPlayerPos() {
@@ -25,9 +28,21 @@ public:
     Player(){
         playerPos = {(float)SCREENWIDTH/2, (float)SCREENHEIGHT/2 };
     }
+
+    int getDashCooldown(){
+        return nextDashCooldown;
+    }
+
     void movePlayer(){
 
         Vector2 tempVect = {(float)0, (float)0};
+
+        if(nextDashCooldown == 0){
+            if(IsKeyDown(KEY_SPACE)){
+                dashNext = true;
+            }
+        }
+
 
         if(IsKeyDown(KEY_W)){
             tempVect.y -= 1.0f;
@@ -38,13 +53,20 @@ public:
         if(IsKeyDown(KEY_A)){
             tempVect.x -= 1.0f;
         }
-        if(IsKeyDown(KEY_D)){
+        if(IsKeyDown(KEY_D) ){
             tempVect.x += 1.0f;
         }
 
         tempVect = Vector2Normalize(tempVect);
 
-        tempVect = Vector2Scale(tempVect, speed);
+        if(dashNext){
+            dashNext = false;
+            tempVect = Vector2Scale(tempVect, 20*speed);
+            nextDashCooldown = 180;
+        }
+        else{
+            tempVect = Vector2Scale(tempVect, speed);
+        }
 
         tempVect = Vector2Add(playerPos, tempVect);
 
@@ -59,6 +81,10 @@ public:
         }
         if(tempVect.y - radius < YLOWER){
             tempVect.y = YLOWER + radius;
+        }
+
+        if(nextDashCooldown > 0){
+            nextDashCooldown--;
         }
 
         playerPos = tempVect;
@@ -247,6 +273,7 @@ int main(){
         DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
         DrawText(("Time: "+std::to_string(clock/60)).c_str(), 10, 34, 24, DARKGRAY);
         DrawText(("High: "+std::to_string(high/60)).c_str(), 10, 56, 24, DARKGRAY);
+        DrawText(("Dash Cooldown: " + std::to_string((float)player.getDashCooldown()/60)).c_str(), 10, 94, 24, DARKGRAY);
 
 
         EndDrawing();
