@@ -13,13 +13,19 @@ const int YLOWER = 33;
 class Player{
 private:
     Vector2 playerPos;
-    float maxSpeed = 6.0f;
+    float maxSpeed = 7.0f;
     Vector2 currSpeed = {0.0f, 0.0f};
     float acceleration = 30.0f/60;
     float coefFriction = 0.95f;
-    int radius = 20;
+    int radius = 16;
     int nextDashCooldown = 0;
     bool dashNext = false;
+    Texture2D move1;
+    Texture2D move2;
+    Texture2D move3;
+    Texture2D move4;
+    int animtimer = 0;
+    int frame =0;
     bool firstSplat = true;
 
 public:
@@ -31,6 +37,7 @@ public:
         return radius;
     }
 
+    int totalElasped=0;
     void inWine(){
         coefFriction = 1.05f;
         if(firstSplat){
@@ -47,6 +54,10 @@ public:
 
     Player(){
         playerPos = {(float)SCREENWIDTH/2, (float)SCREENHEIGHT/2 };
+        move1 = LoadTexture("assets/cheese_move1.png");
+        move2 = LoadTexture("assets/cheese_move2.png");
+        move3 = LoadTexture("assets/cheese_move3.png");
+        move4 = LoadTexture("assets/cheese_move4.png");
     }
 
     int getDashCooldown(){
@@ -147,8 +158,35 @@ public:
         playerPos = tempPos;
 
     }
+
+    void update(int elaspedframes){
+        animtimer +=elaspedframes;
+        totalElasped+=elaspedframes;
+    }
+
     void drawPlayer(){
-        DrawCircle(playerPos.x, playerPos.y, radius, color);
+
+
+
+        if (animtimer>2){
+            animtimer=0;
+            frame++;
+        }
+
+        if (frame>4){
+            frame = 0;
+        }
+
+        if (totalElasped < 30*60){
+            DrawTextureRec(move1,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+        } else if (totalElasped <60*60){
+            DrawTextureRec(move2,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+        } else if (totalElasped<90*60){
+            DrawTextureRec(move3,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+        } else if (totalElasped<120*60) {
+            DrawTextureRec(move4,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+        }
+
     }
 };
 
@@ -174,16 +212,24 @@ public:
             Vector2 tempNormal;
             Vector2 Middle = Vector2Subtract(end,start);
             Middle = Vector2Add(start, Vector2Scale(Middle,0.5));
+            Color col;
+
             for (int i=0;i<Distance;i++)
             {
                 tempNormal = Normal;
                 tempNormal = Vector2Scale(tempNormal,-15+ std::rand()%30);
                 tempNormal = Vector2Scale(tempNormal,((Distance/2)- Vector2Distance(Middle,along))/(Distance/2));
 
+//                if (std::rand()%2 == 0){
+                    col = Color {223 ,214,202, (unsigned char) (100+150.0f* (15.0f-Vector2Distance(along,Vector2Add(along,tempNormal)))/15.0f)};
+//                } else {
+//                    col = Color {42 ,102,113, (unsigned char) (100+150.0f* (15.0f-Vector2Distance(along,Vector2Add(along,tempNormal)))/15.0f)};
+//                }
+
                 along = Vector2Add(along,dir);
-                DrawRectangleV(Vector2Add(along,tempNormal),Vector2 {5,5},Color {0 ,100,125,(unsigned char) (200.0f* (15.0f-Vector2Distance(along,Vector2Add(along,tempNormal)))/15.0f)});
+                DrawRectangleV(Vector2Add(along,tempNormal),Vector2 {3,3},col);
             }
-            DrawRectangleV(Middle,Vector2 {15,15},GREEN);
+
 
         } else {
             DrawLineEx(start,end,30,RED);
@@ -304,8 +350,14 @@ int main(){
     double time = GetTime();
     int elaspedframe = 1;
 
+    RenderTexture2D renderTexture = LoadRenderTexture(SCREENWIDTH, SCREENHEIGHT);
+    Texture2D background = LoadTexture("assets/Background_Plate_without_grain.png");
+
     while (!WindowShouldClose())
     {
+
+
+
             elaspedframe = 0;
             elaspedframe = (GetTime()-time)*60;
             time = GetTime();
@@ -334,6 +386,7 @@ int main(){
                     menuflag = false;
                     attackTimerMax = 65;
                     clock = 0;
+                    player.totalElasped = 0;
                     player.resetPlayer();
                 }
                 continue;
@@ -370,7 +423,7 @@ int main(){
                     break;
                 }
                 if (!collied && attacks[i]->cooldown < 0) {
-                    collied = CheckCollisionPointLine(player.getPlayerPos(), attacks[i]->start, attacks[i]->end, 50);
+                    collied = CheckCollisionPointLine(player.getPlayerPos(), attacks[i]->start, attacks[i]->end, 38);
                 }
 
             }
@@ -396,11 +449,16 @@ int main(){
             for (int i =0;i<elaspedframe;i++) {
                 player.movePlayer();
             }
+            player.update(elaspedframe);
 
 
-            BeginDrawing();
+
+        BeginTextureMode(renderTexture);
 
             ClearBackground(RAYWHITE);
+
+            DrawTextureRec(background,Rectangle{0,0,800,450,},Vector2 {0,0},WHITE);
+
 
             DrawRectangleLines(80, 33, 640, 384, BLACK);
             DrawRectangleLines(100, 53, 620, 364, RED);
@@ -415,6 +473,7 @@ int main(){
                 player.drawPlayer();
 
 
+
             for (int i = 0; i < attacks.size(); i++) {
                 attacks[i]->draw();
             }
@@ -422,9 +481,13 @@ int main(){
             DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
             DrawText(("Time: " + std::to_string(clock / 60)).c_str(), 10, 34, 24, DARKGRAY);
             DrawText(("High: " + std::to_string(high / 60)).c_str(), 10, 56, 24, DARKGRAY);
-        DrawText(("Dash Cooldown: " + std::to_string((float)player.getDashCooldown()/60)).c_str(), 10, 94, 24, DARKGRAY);
+            DrawText(("Dash Cooldown: " + std::to_string((float)player.getDashCooldown()/60)).c_str(), 10, 94, 24, DARKGRAY);
+
+            EndTextureMode();
 
 
+            BeginDrawing();
+                DrawTexturePro(renderTexture.texture,Rectangle{0,0,SCREENWIDTH,-SCREENHEIGHT},Rectangle{0,0,(float) GetScreenWidth(),(float) GetScreenHeight()},Vector2{0,0},0,WHITE);
             EndDrawing();
 
 

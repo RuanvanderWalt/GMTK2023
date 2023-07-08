@@ -1,4 +1,4 @@
-#file(COPY assets DESTINATION .)
+file(COPY assets DESTINATION .)
 
 cmake_minimum_required(VERSION 3.26)
 project(gmtk2023)
