@@ -16,6 +16,8 @@ Sound dash;
 Texture2D wineBig;
 Texture2D wineMedium;
 Texture2D wineSmall;
+Texture2D waring;
+Texture2D dashTexture;
 
 class Player{
 private:
@@ -36,6 +38,7 @@ private:
     int frame =0;
     bool firstSplat = true;
     int dashCount = 0;
+
 
 public:
     Color color = RED;
@@ -197,8 +200,12 @@ public:
             frame++;
         }
 
+
+
+
         if (frame>4){
             frame = 0;
+
         }
 
 
@@ -211,7 +218,7 @@ public:
                            tempAngle , WHITE);
         }
         else{
-                if (totalElasped < 30*60){
+            if (totalElasped < 30*60){
             DrawTextureRec(move1,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
         } else if (totalElasped <60*60){
             DrawTextureRec(move2,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
@@ -220,6 +227,17 @@ public:
         } else if (totalElasped<120*60) {
             DrawTextureRec(move4,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
             }
+
+            if (nextDashCooldown<=0){
+
+                float coef= sin(((float)totalElasped*DEG2RAD)*3.5)*0.5f;
+                coef = abs(coef);
+
+
+                DrawTexturePro(dashTexture, Rectangle {0, 0, 32, 32}, Rectangle {playerPos.x - 8 - 8 * coef, playerPos.y - 30 - 8 * coef, 16 + 8 * coef, 16 + 8 * coef}, Vector2 {0, 0}, 0, WHITE);
+            }
+
+
         }
 
     }
@@ -234,8 +252,8 @@ public:
     bool hasPlayed = false;
 
     attack(){
-        start={(float)(std::rand()%800),(float)(std::rand()%450)};
-        end={(float)(std::rand()%800),(float)(std::rand()%450)};
+        start={(float)(GetRandomValue(XLOWER,XUPPER)),(float)(GetRandomValue(YLOWER,YUPPER))};
+        end={(float)(GetRandomValue(XLOWER,XUPPER)),(float)(GetRandomValue(YLOWER,YUPPER))};
         cooldown =60;
     }
 
@@ -254,20 +272,21 @@ public:
 
             for (int i=0;i<Distance;i++)
             {
-                tempNormal = Normal;
-                tempNormal = Vector2Scale(tempNormal,-15+ std::rand()%30);
-                tempNormal = Vector2Scale(tempNormal,((Distance/2)- Vector2Distance(Middle,along))/(Distance/2));
-
-//                if (std::rand()%2 == 0){
-                    col = Color {223 ,214,202, (unsigned char) (100+150.0f* (15.0f-Vector2Distance(along,Vector2Add(along,tempNormal)))/15.0f)};
-//                } else {
-//                    col = Color {42 ,102,113, (unsigned char) (100+150.0f* (15.0f-Vector2Distance(along,Vector2Add(along,tempNormal)))/15.0f)};
-//                }
-
                 along = Vector2Add(along,dir);
-                DrawRectangleV(Vector2Add(along,tempNormal),Vector2 {3,3},col);
-            }
+                if (i%16 ==0){
+                    if (i==0){
+                        DrawTexturePro(waring, Rectangle {0,32,16,16},Rectangle {along.x,along.y,16,16},Vector2 {16,16},
+                                       Vector2Angle(Vector2 {0,0},Normal)*RAD2DEG,Color {150,150,150,150});
+                    } else if (i>Distance-16){
+                        DrawTexturePro(waring, Rectangle {0,0,16,16},Rectangle {along.x,along.y,16,16},Vector2 {16,16},
+                                       Vector2Angle(Vector2 {0,0},Normal)*RAD2DEG,Color {150,150,150,150});
+                    } else {
+                        DrawTexturePro(waring, Rectangle {0,16,16,16},Rectangle {along.x,along.y,16,16},Vector2 {16,16},
+                                       Vector2Angle(Vector2 {0,0},Normal)*RAD2DEG,Color {150,150,150,150});
+                    }
+                }
 
+            }
 
         } else {
 
@@ -305,7 +324,31 @@ public:
                  col = {255,255,255,(unsigned char) (60+195*(1-place))};
             }
             DrawTexturePro(knife,Rectangle {0,0,(float)(32*flip),192},Rectangle {location.x,location.y,32,192},Vector2 {16,0},angle,col);
-            DrawLineEx(location,Vector2Subtract(location,dir),8,BLACK);
+
+            int Distance = Vector2Distance(location,Vector2Subtract(location,dir));
+            Vector2 along = Vector2Subtract(location,dir);
+            dir = Vector2Normalize(dir);
+            Vector2 Normal = Vector2Rotate(dir,90.0*DEG2RAD);
+
+            for (int i=0;i<Distance;i++)
+            {
+                along = Vector2Add(along,dir);
+                if (i%16 ==0){
+                    if (i==0){
+                        DrawTexturePro(waring, Rectangle {0,32,16,16},Rectangle {along.x,along.y,16,16},Vector2 {16,16},
+                                       Vector2Angle(Vector2 {0,0},Normal)*RAD2DEG,Color {255,255,255,255});
+                    } else if (i>Distance-16){
+                        DrawTexturePro(waring, Rectangle {0,0,16,16},Rectangle {along.x,along.y,16,16},Vector2 {16,16},
+                                       Vector2Angle(Vector2 {0,0},Normal)*RAD2DEG,Color {255,255,255,255});
+                    } else {
+                        DrawTexturePro(waring, Rectangle {0,16,16,16},Rectangle {along.x,along.y,16,16},Vector2 {16,16},
+                                       Vector2Angle(Vector2 {0,0},Normal)*RAD2DEG,Color {255,255,255,255});
+                    }
+                }
+
+            }
+
+
 
         }
 
@@ -347,8 +390,16 @@ public:
     WineSplater(){
         int Count = GetRandomValue(3,10);
         for (int i =0;i<Count;i++){
-            splats.push_back(new Splat(Vector2 {(float)GetRandomValue(200,600),(float)GetRandomValue(100,350)},
-                                       GetRandomValue(10,100)));
+            Vector2 center = {(float)GetRandomValue(200,600),(float)GetRandomValue(100,350)};
+            int radius =GetRandomValue(10,100);
+            bool inRect = (center.x-radius>XLOWER) && (center.x+radius<XUPPER) && (center.y-radius>YLOWER) && (center.y+radius<YUPPER);
+            if (inRect) {
+                splats.push_back(new Splat(center,radius));
+            }else {
+                i--;
+            }
+
+
         }
         cooldown = 180;
 
@@ -434,18 +485,19 @@ int main(){
     wineBig = LoadTexture("assets/wine_big.png");
     wineMedium = LoadTexture("assets/wine_medium.png");
     wineSmall = LoadTexture("assets/wine_small.png");
+    waring = LoadTexture("assets/Slash_effect.png");
+    dashTexture = LoadTexture("assets/dash_indicator.png");
 
 
     Music Track1 = LoadMusicStream("assets/2023 game jam music v2.wav");
-    cut= LoadSound("assets/knife_cut_sound_2.wav");
     splat = LoadSound("assets/wine_splat.wav");
     dash = LoadSound("assets/2023_game_jam_dash_1.wav");
+    cut= LoadSound("assets/knife_cut_sound_5.wav");
     SetSoundVolume(cut,0.5);
     SetSoundVolume(splat,1.5);
 
 
     PlayMusicStream(Track1);
-
     Player player = Player();
 
     SetTargetFPS(60);
@@ -530,6 +582,7 @@ int main(){
                     delete attacks.back();
                     attacks.pop_back();
                     attacks.push_back(new attack());
+
                 }
 
             }
