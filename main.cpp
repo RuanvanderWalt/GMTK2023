@@ -9,6 +9,7 @@ const int XUPPER = 720;
 const int XLOWER = 80;
 const int YUPPER = 417;
 const int YLOWER = 33;
+Texture2D knife ;
 
 class Player{
 private:
@@ -196,6 +197,7 @@ public:
     Vector2 start;
     Vector2 end;
     int cooldown ;
+
     attack(){
         start={(float)(std::rand()%800),(float)(std::rand()%450)};
         end={(float)(std::rand()%800),(float)(std::rand()%450)};
@@ -203,6 +205,7 @@ public:
     }
 
     void draw() {
+        Color col;
         if (cooldown > 0){
 //            DrawLineEx(start,end,30,GRAY);
             int Distance = Vector2Distance(start,end);
@@ -212,7 +215,7 @@ public:
             Vector2 tempNormal;
             Vector2 Middle = Vector2Subtract(end,start);
             Middle = Vector2Add(start, Vector2Scale(Middle,0.5));
-            Color col;
+
 
             for (int i=0;i<Distance;i++)
             {
@@ -232,7 +235,41 @@ public:
 
 
         } else {
-            DrawLineEx(start,end,30,RED);
+//            DrawLineEx(start,end,30,RED);
+            int flip = 1;
+            Vector2 location;
+            if (start.y<=end.y){
+                location =start;
+                if (start.x<end.x){
+                    flip =-1;
+                }
+
+            } else {
+                location =end;
+                if (end.x<start.x){
+                    flip =-1;
+                }
+            }
+
+
+            float place = (float)abs(cooldown)/(float)30;
+            float angle = Vector2Angle(Vector2 {0,0},Vector2Subtract(start,end))*RAD2DEG +90;
+            if (angle>90){
+                angle -= 180;
+            }
+
+            Vector2 dir = Vector2Rotate({0,1},angle*DEG2RAD);
+            dir = Vector2Scale(dir, Vector2Distance(start,end)*place);
+
+            location = Vector2Add(location,dir);
+
+
+            if (place < 0.5){
+                 col = WHITE;
+            } else {
+                 col = {255,255,255,(unsigned char) (60+195*(1-place))};
+            }
+            DrawTexturePro(knife,Rectangle {0,0,(float)(32*flip),192},Rectangle {location.x,location.y,32,192},Vector2 {16,0},angle,col);
         }
 
     }
@@ -328,7 +365,8 @@ int main(){
 
     InitAudioDevice();
 
-    Music Track1 = LoadMusicStream("assets/2023 game jam music 1.wav");
+    knife = LoadTexture("assets/knife.png");
+    Music Track1 = LoadMusicStream("assets/2023 game jam music v2.wav");
 
     PlayMusicStream(Track1);
 
@@ -352,6 +390,7 @@ int main(){
 
     RenderTexture2D renderTexture = LoadRenderTexture(SCREENWIDTH, SCREENHEIGHT);
     Texture2D background = LoadTexture("assets/Background_Plate_without_grain.png");
+
 
     while (!WindowShouldClose())
     {
@@ -460,8 +499,8 @@ int main(){
             DrawTextureRec(background,Rectangle{0,0,800,450,},Vector2 {0,0},WHITE);
 
 
-            DrawRectangleLines(80, 33, 640, 384, BLACK);
-            DrawRectangleLines(100, 53, 620, 364, RED);
+//            DrawRectangleLines(80, 33, 640, 384, BLACK);
+//            DrawRectangleLines(100, 53, 620, 364, RED);
 
             if (wineSplater != nullptr) {
 
@@ -470,7 +509,7 @@ int main(){
 
 
 
-                player.drawPlayer();
+            player.drawPlayer();
 
 
 
@@ -478,10 +517,10 @@ int main(){
                 attacks[i]->draw();
             }
 
-            DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
-            DrawText(("Time: " + std::to_string(clock / 60)).c_str(), 10, 34, 24, DARKGRAY);
-            DrawText(("High: " + std::to_string(high / 60)).c_str(), 10, 56, 24, DARKGRAY);
-            DrawText(("Dash Cooldown: " + std::to_string((float)player.getDashCooldown()/60)).c_str(), 10, 94, 24, DARKGRAY);
+//            DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
+//            DrawText(("Time: " + std::to_string(clock / 60)).c_str(), 10, 34, 24, DARKGRAY);
+//            DrawText(("High: " + std::to_string(high / 60)).c_str(), 10, 56, 24, DARKGRAY);
+//            DrawText(("Dash Cooldown: " + std::to_string((float)player.getDashCooldown()/60)).c_str(), 10, 94, 24, DARKGRAY);
 
             EndTextureMode();
 
