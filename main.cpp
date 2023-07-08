@@ -204,7 +204,7 @@ public:
             tempAngle = tempAngle < -90 ? 180 + tempAngle : tempAngle;
             tempAngle = tempAngle > 90 ? 180 - tempAngle : tempAngle;
             //DrawText(("Dash Angle: " + std::to_string((float)tempAngle)).c_str(), 10, 70, 24, WHITE);
-            DrawTexturePro(moveDash, Rectangle {0, 0, 32, 32}, Rectangle {playerPos.x-16, playerPos.y-16, 32, 32}, {16,16},
+            DrawTexturePro(moveDash, Rectangle {0, 0, 32, 32}, Rectangle {playerPos.x, playerPos.y, 32, 32}, {16,16},
                            tempAngle , WHITE);
         }
         else{
@@ -357,14 +357,14 @@ public:
     }
     void draw(){
         for (int i =0;i<splats.size();i++){
-           // DrawCircle(splats[i]->pos.x,splats[i]->pos.y,splats[i]->radius,PURPLE);
+            //DrawCircle(splats[i]->pos.x,splats[i]->pos.y,splats[i]->radius,Color {255,255,0,127});
 
             if(splats[i]->radius > 64){
-                DrawTexturePro(wineBig,Rectangle {0,0,64,64},Rectangle {splats[i]->pos.x-splats[i]->radius,splats[i]->pos.y-splats[i]->radius,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {32,32},splats[i]->angle,Color {255,255,255,255});
+                DrawTexturePro(wineBig,Rectangle {0,0,64,64},Rectangle {splats[i]->pos.x,splats[i]->pos.y,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {(float)splats[i]->radius,(float)splats[i]->radius},splats[i]->angle,Color {255,255,255,255});
             } else if (splats[i]->radius > 32){
-                DrawTexturePro(wineMedium,Rectangle {0,0,32,32},Rectangle {splats[i]->pos.x-splats[i]->radius,splats[i]->pos.y-splats[i]->radius,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {16,16},splats[i]->angle,Color {255,255,255,255});
+                DrawTexturePro(wineMedium,Rectangle {0,0,32,32},Rectangle {splats[i]->pos.x,splats[i]->pos.y,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {(float)splats[i]->radius,(float)splats[i]->radius},splats[i]->angle,Color {255,255,255,255});
             } else {
-                DrawTexturePro(wineSmall,Rectangle {0,0,16,16},Rectangle {splats[i]->pos.x-splats[i]->radius,splats[i]->pos.y-splats[i]->radius,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {8,8},splats[i]->angle,Color {255,255,255,255});
+                DrawTexturePro(wineSmall,Rectangle {0,0,16,16},Rectangle {splats[i]->pos.x,splats[i]->pos.y,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {(float)splats[i]->radius,(float)splats[i]->radius},splats[i]->angle,Color {255,255,255,255});
             }
 
 
@@ -406,6 +406,8 @@ bool menu(int& clock,int& high){
     if (high != 0){
         DrawText(("High Score: "+std::to_string(high/60)).c_str(), 200, 34, 24, ORANGE);
     }
+    DrawText(std::to_string(GetGamepadAxisMovement(0,0)).c_str(), 10, 56, 24, DARKGRAY);
+    DrawText(std::to_string(GetGamepadAxisMovement(0,1)).c_str(), 10, 70, 24, DARKGRAY);
 
     EndDrawing();
 
