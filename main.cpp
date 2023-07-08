@@ -12,6 +12,7 @@ const int YLOWER = 33;
 Texture2D knife ;
 Sound cut;
 Sound splat;
+Sound dash;
 Texture2D wineBig;
 Texture2D wineMedium;
 Texture2D wineSmall;
@@ -99,6 +100,7 @@ public:
             if(nextDashCooldown == 0){
                 if(IsKeyDown(KEY_SPACE)){
                     dashNext = true;
+                    PlaySound(dash);
                 }
             }
 
@@ -437,6 +439,7 @@ int main(){
     Music Track1 = LoadMusicStream("assets/2023 game jam music v2.wav");
     cut= LoadSound("assets/knife_cut_sound_2.wav");
     splat = LoadSound("assets/wine_splat.wav");
+    dash = LoadSound("assets/2023_game_jam_dash_1.wav");
     SetSoundVolume(cut,0.5);
     SetSoundVolume(splat,1.5);
 
