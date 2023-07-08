@@ -10,6 +10,10 @@ const int XLOWER = 80;
 const int YUPPER = 417;
 const int YLOWER = 33;
 Texture2D knife ;
+Sound cut;
+Texture2D wineBig;
+Texture2D wineMedium;
+Texture2D wineSmall;
 
 class Player{
 private:
@@ -179,7 +183,11 @@ public:
 
     void drawPlayer(){
 
+        float flip = 1;
 
+        if (currSpeed.x < 0 && abs(currSpeed.x)>2){
+            flip = -1;
+        }
 
         if (animtimer>2){
             animtimer=0;
@@ -190,6 +198,7 @@ public:
             frame = 0;
         }
 
+
         if(dashCount > 0){
             float tempAngle = Vector2Angle({0,0}, currSpeed)*RAD2DEG;
             tempAngle = tempAngle < -90 ? 180 + tempAngle : tempAngle;
@@ -199,14 +208,14 @@ public:
                            tempAngle , WHITE);
         }
         else{
-            if (totalElasped < 30*60){
-                DrawTextureRec(move1,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
-            } else if (totalElasped <60*60){
-                DrawTextureRec(move2,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
-            } else if (totalElasped<90*60){
-                DrawTextureRec(move3,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
-            } else if (totalElasped<120*60) {
-                DrawTextureRec(move4,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+                if (totalElasped < 30*60){
+            DrawTextureRec(move1,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+        } else if (totalElasped <60*60){
+            DrawTextureRec(move2,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+        } else if (totalElasped<90*60){
+            DrawTextureRec(move3,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+        } else if (totalElasped<120*60) {
+            DrawTextureRec(move4,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
             }
         }
 
@@ -219,6 +228,7 @@ public:
     Vector2 start;
     Vector2 end;
     int cooldown ;
+    bool hasPlayed = false;
 
     attack(){
         start={(float)(std::rand()%800),(float)(std::rand()%450)};
@@ -299,6 +309,12 @@ public:
     }
 
     void update(int elaspedframes){
+
+        if (cooldown<0 && !hasPlayed){
+            hasPlayed=true;
+                PlaySound(cut);
+        }
+
         cooldown-=elaspedframes;
     }
 
@@ -310,9 +326,11 @@ private:
 struct Splat {
     Vector2 pos;
     int radius;
+    int angle;
     Splat(Vector2 p,int r){
         pos = p;
         radius = r;
+        angle  = GetRandomValue(0,360);
     }
 };
 
@@ -321,6 +339,7 @@ private:
 public:
     int cooldown;
     std::vector<Splat*> splats;
+
     WineSplater(){
         int Count = GetRandomValue(3,10);
         for (int i =0;i<Count;i++){
@@ -328,6 +347,7 @@ public:
                                        GetRandomValue(10,100)));
         }
         cooldown = 180;
+
     }
     ~WineSplater() {
         for (int i =0;i<splats.size();i++){
@@ -337,7 +357,17 @@ public:
     }
     void draw(){
         for (int i =0;i<splats.size();i++){
-            DrawCircle(splats[i]->pos.x,splats[i]->pos.y,splats[i]->radius,PURPLE);
+           // DrawCircle(splats[i]->pos.x,splats[i]->pos.y,splats[i]->radius,PURPLE);
+
+            if(splats[i]->radius > 64){
+                DrawTexturePro(wineBig,Rectangle {0,0,64,64},Rectangle {splats[i]->pos.x-splats[i]->radius,splats[i]->pos.y-splats[i]->radius,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {32,32},splats[i]->angle,Color {255,255,255,255});
+            } else if (splats[i]->radius > 32){
+                DrawTexturePro(wineMedium,Rectangle {0,0,32,32},Rectangle {splats[i]->pos.x-splats[i]->radius,splats[i]->pos.y-splats[i]->radius,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {16,16},splats[i]->angle,Color {255,255,255,255});
+            } else {
+                DrawTexturePro(wineSmall,Rectangle {0,0,16,16},Rectangle {splats[i]->pos.x-splats[i]->radius,splats[i]->pos.y-splats[i]->radius,(float)splats[i]->radius*2,(float)splats[i]->radius*2},Vector2 {8,8},splats[i]->angle,Color {255,255,255,255});
+            }
+
+
         }
     }
     void EffectPlayer(Player &player){
@@ -390,7 +420,15 @@ int main(){
     InitAudioDevice();
 
     knife = LoadTexture("assets/knife.png");
+    wineBig = LoadTexture("assets/wine_big.png");
+    wineMedium = LoadTexture("assets/wine_medium.png");
+    wineSmall = LoadTexture("assets/wine_small.png");
+
+
     Music Track1 = LoadMusicStream("assets/2023 game jam music v2.wav");
+    cut= LoadSound("assets/knife_cut_sound_2.wav");
+    SetSoundVolume(cut,0.5);
+
 
     PlayMusicStream(Track1);
 
