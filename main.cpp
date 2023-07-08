@@ -13,10 +13,14 @@ const int YLOWER = 33;
 class Player{
 private:
     Vector2 playerPos;
-    float speed = 8.0f;
+    float maxSpeed = 6.0f;
+    Vector2 currSpeed = {0.0f, 0.0f};
+    float acceleration = 30.0f/60;
+    float coefFriction = 0.95f;
     int radius = 20;
     int nextDashCooldown = 0;
     bool dashNext = false;
+    bool firstSplat = true;
 
 public:
     Color color = RED;
@@ -27,6 +31,19 @@ public:
         return radius;
     }
 
+    void inWine(){
+        coefFriction = 1.05f;
+        if(firstSplat){
+            currSpeed = Vector2Scale(currSpeed, 0.85f);
+            firstSplat = false;
+        }
+
+    }
+
+    void outWine(){
+        coefFriction = 0.95f;
+        firstSplat = true;
+    }
 
     Player(){
         playerPos = {(float)SCREENWIDTH/2, (float)SCREENHEIGHT/2 };
@@ -36,9 +53,20 @@ public:
         return nextDashCooldown;
     }
 
+    void resetPlayer(){
+        playerPos = {(float)SCREENWIDTH/2, (float)SCREENHEIGHT/2 };
+        currSpeed = {0.0f, 0.0f};
+        nextDashCooldown = 0;
+        dashNext = false;
+    }
+
     void movePlayer(){
 
-        Vector2 tempVect = {(float)0, (float)0};
+        //currSpeed = maxSpeed;
+
+        //currSpeed = currSpeed + acceleration > maxSpeed ? maxSpeed : currSpeed + acceleration;
+
+        Vector2 tempVect = {0.0f, 0.0f};
 
         if(nextDashCooldown == 0){
             if(IsKeyDown(KEY_SPACE)){
@@ -48,49 +76,75 @@ public:
 
 
         if(IsKeyDown(KEY_W)){
-            tempVect.y -= 1.0f;
+            tempVect.y = tempVect.y - (1.95f - coefFriction);
         }
         if(IsKeyDown(KEY_S)){
-            tempVect.y += 1.0f;
+            tempVect.y = tempVect.y + (1.95f - coefFriction);
         }
         if(IsKeyDown(KEY_A)){
-            tempVect.x -= 1.0f;
+            tempVect.x = tempVect.x - (1.95f - coefFriction);
         }
         if(IsKeyDown(KEY_D) ){
-            tempVect.x += 1.0f;
+            tempVect.x = tempVect.x + (1.95f - coefFriction);
+        }
+
+        if(IsKeyUp(KEY_W) && IsKeyUp(KEY_S) && currSpeed.y < 0){
+            tempVect.y += coefFriction;
+        }
+        if(IsKeyUp(KEY_S) && IsKeyUp(KEY_W) && currSpeed.y > 0){
+            tempVect.y -= coefFriction;
+        }
+        if(IsKeyUp(KEY_A) && IsKeyUp(KEY_D) && currSpeed.x < 0){
+            tempVect.x += coefFriction;
+        }
+        if(IsKeyUp(KEY_D) && IsKeyUp(KEY_A) && currSpeed.x > 0){
+            tempVect.x -= coefFriction;
         }
 
         tempVect = Vector2Normalize(tempVect);
 
+        tempVect = Vector2Scale(tempVect, acceleration);
+        currSpeed = Vector2Add(currSpeed, tempVect);
+
+        if(Vector2Length(currSpeed) > maxSpeed){
+            currSpeed = Vector2Normalize(currSpeed);
+            currSpeed = Vector2Scale(currSpeed, maxSpeed);
+        }
+
+        Vector2 tempPos = Vector2Add(playerPos, currSpeed);
+
         if(dashNext){
             dashNext = false;
-            tempVect = Vector2Scale(tempVect, 20*speed);
+            tempPos = Vector2Add(Vector2Scale(Vector2Normalize(currSpeed), 20*maxSpeed), playerPos);
             nextDashCooldown = 180;
         }
-        else{
-            tempVect = Vector2Scale(tempVect, speed);
-        }
 
-        tempVect = Vector2Add(playerPos, tempVect);
 
-        if(tempVect.x + radius > XUPPER){
-            tempVect.x = XUPPER - radius;
+
+
+
+        if(tempPos.x + radius > XUPPER){
+            tempPos.x = XUPPER - radius;
+            currSpeed.x = 0.0f;
         }
-        if(tempVect.x - radius < XLOWER){
-            tempVect.x = XLOWER + radius;
+        if(tempPos.x - radius < XLOWER){
+            tempPos.x = XLOWER + radius;
+            currSpeed.x = 0.0f;
         }
-        if(tempVect.y + radius > YUPPER){
-            tempVect.y = YUPPER- radius;
+        if(tempPos.y + radius > YUPPER){
+            tempPos.y = YUPPER- radius;
+            currSpeed.y = 0.0f;
         }
-        if(tempVect.y - radius < YLOWER){
-            tempVect.y = YLOWER + radius;
+        if(tempPos.y - radius < YLOWER){
+            tempPos.y = YLOWER + radius;
+            currSpeed.y = 0.0f;
         }
 
         if(nextDashCooldown > 0){
             nextDashCooldown--;
         }
 
-        playerPos = tempVect;
+        playerPos = tempPos;
 
     }
     void drawPlayer(){
@@ -189,7 +243,8 @@ public:
         }
 
         if (shouldAffect){
-            player.color = PURPLE;
+            player.color = GREEN;
+            player.inWine();
         }
 
     }
@@ -279,6 +334,7 @@ int main(){
                     menuflag = false;
                     attackTimerMax = 65;
                     clock = 0;
+                    player.resetPlayer();
                 }
                 continue;
             }
@@ -325,6 +381,7 @@ int main(){
 
 
             player.color = RED;
+            player.outWine();
             if (wineSplater != nullptr) {
                 if (wineSplater->cooldown < 0) {
                     delete wineSplater;
