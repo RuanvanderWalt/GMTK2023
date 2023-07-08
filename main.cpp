@@ -235,7 +235,7 @@ public:
 
 
         } else {
-//            DrawLineEx(start,end,30,RED);
+
             int flip = 1;
             Vector2 location;
             if (start.y<=end.y){
@@ -270,6 +270,8 @@ public:
                  col = {255,255,255,(unsigned char) (60+195*(1-place))};
             }
             DrawTexturePro(knife,Rectangle {0,0,(float)(32*flip),192},Rectangle {location.x,location.y,32,192},Vector2 {16,0},angle,col);
+            DrawLineEx(location,Vector2Subtract(location,dir),8,BLACK);
+
         }
 
     }
