@@ -25,9 +25,11 @@ private:
     Texture2D move2;
     Texture2D move3;
     Texture2D move4;
+    Texture2D moveDash;
     int animtimer = 0;
     int frame =0;
     bool firstSplat = true;
+    int dashCount = 0;
 
 public:
     Color color = RED;
@@ -59,6 +61,7 @@ public:
         move2 = LoadTexture("assets/cheese_move2.png");
         move3 = LoadTexture("assets/cheese_move3.png");
         move4 = LoadTexture("assets/cheese_move4.png");
+        moveDash = LoadTexture("assets/cheese_dash.png");
     }
 
     int getDashCooldown(){
@@ -78,62 +81,71 @@ public:
 
         //currSpeed = currSpeed + acceleration > maxSpeed ? maxSpeed : currSpeed + acceleration;
 
-        Vector2 tempVect = {0.0f, 0.0f};
+        Vector2 tempPos = {0.0f, 0.0f};
 
-        if(nextDashCooldown == 0){
-            if(IsKeyDown(KEY_SPACE)){
-                dashNext = true;
+        if(dashCount > 0){
+            dashCount--;
+            tempPos = Vector2Add(Vector2Scale(Vector2Normalize(currSpeed), 4*maxSpeed), playerPos);
+
+        }
+        else{
+            Vector2 tempVect = {0.0f, 0.0f};
+
+            if(nextDashCooldown == 0){
+                if(IsKeyDown(KEY_SPACE)){
+                    dashNext = true;
+                }
+            }
+
+
+            if(IsKeyDown(KEY_W)){
+                tempVect.y = tempVect.y - (1.95f - coefFriction);
+            }
+            if(IsKeyDown(KEY_S)){
+                tempVect.y = tempVect.y + (1.95f - coefFriction);
+            }
+            if(IsKeyDown(KEY_A)){
+                tempVect.x = tempVect.x - (1.95f - coefFriction);
+            }
+            if(IsKeyDown(KEY_D) ){
+                tempVect.x = tempVect.x + (1.95f - coefFriction);
+            }
+
+            Vector2 tempAcc = tempVect;
+
+            if(IsKeyUp(KEY_W) && IsKeyUp(KEY_S) && currSpeed.y < 0){
+                tempAcc.y += coefFriction;
+            }
+            if(IsKeyUp(KEY_S) && IsKeyUp(KEY_W) && currSpeed.y > 0){
+                tempAcc.y -= coefFriction;
+            }
+            if(IsKeyUp(KEY_A) && IsKeyUp(KEY_D) && currSpeed.x < 0){
+                tempAcc.x += coefFriction;
+            }
+            if(IsKeyUp(KEY_D) && IsKeyUp(KEY_A) && currSpeed.x > 0){
+                tempAcc.x -= coefFriction;
+            }
+
+            tempAcc = Vector2Normalize(tempAcc);
+
+            tempAcc = Vector2Scale(tempAcc, acceleration);
+            currSpeed = Vector2Add(currSpeed, tempAcc);
+
+            if(Vector2Length(currSpeed) > maxSpeed){
+                currSpeed = Vector2Normalize(currSpeed);
+                currSpeed = Vector2Scale(currSpeed, maxSpeed);
+            }
+
+            tempPos = Vector2Add(playerPos, currSpeed);
+
+            if(dashNext){
+                dashNext = false;
+                dashCount = 5;
+                currSpeed = Vector2Normalize(tempVect);
+                tempPos = Vector2Add(Vector2Scale(currSpeed, 4*maxSpeed), playerPos);
+                nextDashCooldown = 150;
             }
         }
-
-
-        if(IsKeyDown(KEY_W)){
-            tempVect.y = tempVect.y - (1.95f - coefFriction);
-        }
-        if(IsKeyDown(KEY_S)){
-            tempVect.y = tempVect.y + (1.95f - coefFriction);
-        }
-        if(IsKeyDown(KEY_A)){
-            tempVect.x = tempVect.x - (1.95f - coefFriction);
-        }
-        if(IsKeyDown(KEY_D) ){
-            tempVect.x = tempVect.x + (1.95f - coefFriction);
-        }
-
-        if(IsKeyUp(KEY_W) && IsKeyUp(KEY_S) && currSpeed.y < 0){
-            tempVect.y += coefFriction;
-        }
-        if(IsKeyUp(KEY_S) && IsKeyUp(KEY_W) && currSpeed.y > 0){
-            tempVect.y -= coefFriction;
-        }
-        if(IsKeyUp(KEY_A) && IsKeyUp(KEY_D) && currSpeed.x < 0){
-            tempVect.x += coefFriction;
-        }
-        if(IsKeyUp(KEY_D) && IsKeyUp(KEY_A) && currSpeed.x > 0){
-            tempVect.x -= coefFriction;
-        }
-
-        tempVect = Vector2Normalize(tempVect);
-
-        tempVect = Vector2Scale(tempVect, acceleration);
-        currSpeed = Vector2Add(currSpeed, tempVect);
-
-        if(Vector2Length(currSpeed) > maxSpeed){
-            currSpeed = Vector2Normalize(currSpeed);
-            currSpeed = Vector2Scale(currSpeed, maxSpeed);
-        }
-
-        Vector2 tempPos = Vector2Add(playerPos, currSpeed);
-
-        if(dashNext){
-            dashNext = false;
-            tempPos = Vector2Add(Vector2Scale(Vector2Normalize(currSpeed), 20*maxSpeed), playerPos);
-            nextDashCooldown = 180;
-        }
-
-
-
-
 
         if(tempPos.x + radius > XUPPER){
             tempPos.x = XUPPER - radius;
@@ -178,14 +190,24 @@ public:
             frame = 0;
         }
 
-        if (totalElasped < 30*60){
-            DrawTextureRec(move1,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
-        } else if (totalElasped <60*60){
-            DrawTextureRec(move2,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
-        } else if (totalElasped<90*60){
-            DrawTextureRec(move3,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
-        } else if (totalElasped<120*60) {
-            DrawTextureRec(move4,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+        if(dashCount > 0){
+            float tempAngle = Vector2Angle({0,0}, currSpeed)*RAD2DEG;
+            tempAngle = tempAngle < -90 ? 180 + tempAngle : tempAngle;
+            tempAngle = tempAngle > 90 ? 180 - tempAngle : tempAngle;
+            //DrawText(("Dash Angle: " + std::to_string((float)tempAngle)).c_str(), 10, 70, 24, WHITE);
+            DrawTexturePro(moveDash, Rectangle {0, 0, 32, 32}, Rectangle {playerPos.x-16, playerPos.y-16, 32, 32}, {16,16},
+                           tempAngle , WHITE);
+        }
+        else{
+            if (totalElasped < 30*60){
+                DrawTextureRec(move1,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+            } else if (totalElasped <60*60){
+                DrawTextureRec(move2,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+            } else if (totalElasped<90*60){
+                DrawTextureRec(move3,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+            } else if (totalElasped<120*60) {
+                DrawTextureRec(move4,Rectangle {(float) (32*frame),0,32,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+            }
         }
 
     }
@@ -519,10 +541,11 @@ int main(){
                 attacks[i]->draw();
             }
 
-//            DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
-//            DrawText(("Time: " + std::to_string(clock / 60)).c_str(), 10, 34, 24, DARKGRAY);
-//            DrawText(("High: " + std::to_string(high / 60)).c_str(), 10, 56, 24, DARKGRAY);
-//            DrawText(("Dash Cooldown: " + std::to_string((float)player.getDashCooldown()/60)).c_str(), 10, 94, 24, DARKGRAY);
+            DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
+            DrawText(("Time: " + std::to_string(clock / 60)).c_str(), 10, 34, 24, DARKGRAY);
+            DrawText(("High: " + std::to_string(high / 60)).c_str(), 10, 56, 24, DARKGRAY);
+
+            DrawText(("Dash Cooldown: " + std::to_string((float)player.getDashCooldown()/60)).c_str(), 10, 94, 24, DARKGRAY);
 
             EndTextureMode();
 
