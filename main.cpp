@@ -479,7 +479,7 @@ bool menu(int& clock,int& high){
     }
 
     if (IsGamepadAvailable(0)){
-        if (IsGamepadButtonPressed(0,GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
+        if (IsGamepadButtonPressed(0,GAMEPAD_BUTTON_MIDDLE_RIGHT)){
             out =true;
         }
     }
@@ -491,8 +491,8 @@ bool menu(int& clock,int& high){
     if (high != 0){
         DrawText(("High Score: "+std::to_string(high/60)).c_str(), 200, 34, 24, ORANGE);
     }
-    DrawText(std::to_string(GetGamepadAxisMovement(0,0)).c_str(), 10, 56, 24, DARKGRAY);
-    DrawText(std::to_string(GetGamepadAxisMovement(0,1)).c_str(), 10, 70, 24, DARKGRAY);
+    //DrawText(std::to_string(GetGamepadAxisMovement(0,0)).c_str(), 10, 56, 24, DARKGRAY);
+    //DrawText(std::to_string(GetGamepadAxisMovement(0,1)).c_str(), 10, 70, 24, DARKGRAY);
 
     EndDrawing();
 
@@ -538,7 +538,7 @@ int main_menu(Difficulty& diff){
         }
 
         if (!done){
-            if (IsGamepadButtonPressed(0,GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
+            if (IsGamepadButtonPressed(0,GAMEPAD_BUTTON_MIDDLE_RIGHT)){
                 done = true;
             }
         }
@@ -680,7 +680,9 @@ int main(){
 
         clock+=elaspedframe;
 
-        attackTimerMax = -scale*std::log((float)clock/60.0f )/std::log(10)+65;
+        DrawText(std::to_string(GetGamepadButtonPressed()).c_str(), 10, 70, 24, DARKGRAY);
+
+        attackTimerMax = -(scale*(std::log((float)clock/60.0f )/std::log(10)))+65;
 
         if (scale == -1){
             scale = main_menu(difficulty);
