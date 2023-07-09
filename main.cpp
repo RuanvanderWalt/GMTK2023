@@ -12,6 +12,7 @@ const int YLOWER = 33;
 Texture2D knife ;
 Sound cut;
 Sound splat;
+Sound cheese;
 Sound dash;
 Texture2D wineBig;
 Texture2D wineMedium;
@@ -630,11 +631,13 @@ int main(){
     tutorial2 = LoadTexture("assets/menu_controller.png");
 
 
+
     Music Track1 = LoadMusicStream("assets/2023 game jam music v2.wav");
     Music Track2 = LoadMusicStream("assets/2023_game_jam_music_menu.wav");
     splat = LoadSound("assets/wine_splat.wav");
     dash = LoadSound("assets/2023_game_jam_dash_1.wav");
     cut= LoadSound("assets/knife_cut_sound_5.wav");
+    cheese = LoadSound("assets/2023_game_jam_MMM_CHEESE.wav");
     SetSoundVolume(cut,0.5);
     SetSoundVolume(splat,1.5);
 
@@ -792,6 +795,7 @@ int main(){
 
             if (collied) {
                 menuflag = true;
+                PlaySound(cheese);
                 StopMusicStream(Track1); // stops game music
                 PlayMusicStream(Track2); // starts playing menu music on game over
             }
