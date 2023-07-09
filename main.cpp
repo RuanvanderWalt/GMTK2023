@@ -717,7 +717,7 @@ int main(){
                 clock = 0;
                 player.totalElasped = 0;
                 player.resetPlayer();
-                wineCooldown = 0;
+                wineCooldown = 50;
                 if(wineSplater != nullptr){
                     delete wineSplater;
                     wineSplater = nullptr;
@@ -740,7 +740,7 @@ int main(){
                 clock = 0;
                 player.totalElasped = 0;
                 player.resetPlayer();
-                wineCooldown = 0;
+                wineCooldown = 50;
                 if(wineSplater != nullptr){
                     delete wineSplater;
                     wineSplater = nullptr;
@@ -848,7 +848,19 @@ int main(){
             DrawTextureRec(background,Rectangle{0,0,800,450,},Vector2 {0,0},WHITE);
             DrawTextureRec(tutorial, Rectangle {0,0,64,208},Vector2{XUPPER+8,YLOWER+8},WHITE);
             //DrawTextureRec(wine, Rectangle {0,0,64,208},Vector2{XUPPER+8,YLOWER+208-8},WHITE);
-            DrawTexturePro(wine, Rectangle {0,0,64,208}, Rectangle {XUPPER+8,YLOWER+208-8,64,208}, Vector2 {0,0},0,WHITE);
+
+            if (wineCooldown<=550){
+                if (wineCooldown<50){
+                    DrawTexturePro(wine, Rectangle {0,0,64,208}, Rectangle {XUPPER+8+32,YLOWER+208-8+104,64,208}, Vector2 {32,104},-50+wineCooldown,WHITE);
+                } else {
+                    DrawTexturePro(wine, Rectangle {0,0,64,208}, Rectangle {XUPPER+8+32,YLOWER+208-8+104,64,208}, Vector2 {32,104},0,WHITE);
+                }
+            } else {
+                int along =wineCooldown-550;
+
+                DrawTexturePro(wine, Rectangle {0,0,64,208}, Rectangle {XUPPER+8+32,YLOWER+208-8+104,64,208}, Vector2 {32,104},-along,WHITE);
+            }
+
 
             DrawTextureRec(tutorial2, Rectangle {0,0,64,208},Vector2{8,YLOWER+8},WHITE);
 
