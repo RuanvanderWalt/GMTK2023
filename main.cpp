@@ -493,8 +493,8 @@ bool menu(int& clock,int& high){
     //ClearBackground(SKYBLUE);
 
     DrawTexturePro(endScreen , (Rectangle){0, 0, 800, 450}, (Rectangle) {0, 0, (float) GetScreenWidth(), (float)GetScreenHeight()}, Vector2 {0, 0}, 0, WHITE);
-    DrawText((std::to_string(clock/60)).c_str(), 360, 260, 24, Color {57,21,19,255});
-    DrawText((std::to_string(high/60)).c_str(), 360, 360, 24, Color {57,21,19,255});
+    DrawText((std::to_string(clock/60)).c_str(), (float)(360*GetScreenWidth())/800, (260*GetScreenHeight())/450, (24*GetScreenHeight())/450, Color {57,21,19,255});
+    DrawText((std::to_string(high/60)).c_str(), (float)(360*GetScreenWidth())/800, (360*GetScreenHeight())/450, (24*GetScreenHeight())/450, Color {57,21,19,255});
 
     //DrawText(std::to_string(GetGamepadAxisMovement(0,0)).c_str(), 10, 56, 24, DARKGRAY);
     //DrawText(std::to_string(GetGamepadAxisMovement(0,1)).c_str(), 10, 70, 24, DARKGRAY);
