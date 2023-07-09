@@ -223,13 +223,15 @@ public:
         }
         else{
             if (totalElasped < 30*60){
-            DrawTextureRec(move1,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
-        } else if (totalElasped <60*60){
-            DrawTextureRec(move2,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
-        } else if (totalElasped<90*60){
-            DrawTextureRec(move3,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
-        } else if (totalElasped<120*60) {
-            DrawTextureRec(move4,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+                DrawTextureRec(move1,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+            } else if (totalElasped <60*60){
+                DrawTextureRec(move2,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+            } else if (totalElasped<90*60){
+                DrawTextureRec(move3,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+            } else if (totalElasped<120*60) {
+                DrawTextureRec(move4,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
+            } else {
+                DrawTextureRec(move4,Rectangle {(float) (32*frame),0,32*flip,32}, Vector2Subtract(playerPos,Vector2{(float )radius+2,(float)radius+2}),WHITE);
             }
 
             if (nextDashCooldown<=0){
