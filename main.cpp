@@ -493,11 +493,9 @@ bool menu(int& clock,int& high){
     //ClearBackground(SKYBLUE);
 
     DrawTexturePro(endScreen , (Rectangle){0, 0, 800, 450}, (Rectangle) {0, 0, (float) GetScreenWidth(), (float)GetScreenHeight()}, Vector2 {0, 0}, 0, WHITE);
+    DrawText((std::to_string(clock/60)).c_str(), 360, 260, 24, Color {57,21,19,255});
+    DrawText((std::to_string(high/60)).c_str(), 360, 360, 24, Color {57,21,19,255});
 
-
-    /*if (high != 0){
-        DrawText(("High Score: "+std::to_string(high/60)).c_str(), 200, 34, 24, ORANGE);
-    }*/
     //DrawText(std::to_string(GetGamepadAxisMovement(0,0)).c_str(), 10, 56, 24, DARKGRAY);
     //DrawText(std::to_string(GetGamepadAxisMovement(0,1)).c_str(), 10, 70, 24, DARKGRAY);
 
@@ -695,15 +693,7 @@ int main(){
         UpdateMusicStream(Track2);
 
 
-        elaspedframe = 0;
-        elaspedframe = (GetTime()-time)*60;
-        time = GetTime();
 
-        clock+=elaspedframe;
-
-        //DrawText(std::to_string(GetGamepadButtonPressed()).c_str(), 10, 70, 24, DARKGRAY);
-
-        attackTimerMax = -(scale*(std::log((float)clock/60.0f )/std::log(10)))+65;
 
         if (scale == -1){
             scale = main_menu(difficulty);
@@ -753,6 +743,16 @@ int main(){
 
             }
         }
+
+        elaspedframe = 0;
+        elaspedframe = (GetTime()-time)*60;
+        time = GetTime();
+
+        clock+=elaspedframe;
+
+        //DrawText(std::to_string(GetGamepadButtonPressed()).c_str(), 10, 70, 24, DARKGRAY);
+
+        attackTimerMax = -(scale*(std::log((float)clock/60.0f )/std::log(10)))+65;
 
 
 
