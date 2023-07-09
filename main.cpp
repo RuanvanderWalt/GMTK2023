@@ -469,6 +469,92 @@ bool menu(int& clock,int& high){
     return out;
 }
 
+enum Difficulty {
+    EASY,
+    NORMAL,
+    MEDIUM,
+    HARD,
+    IMPOSSIBLE
+};
+
+int main_menu(Difficulty& diff){
+    int out = -1;
+    bool done = IsKeyPressed(KEY_ENTER);
+
+    if (done){
+        switch (diff){
+            case Difficulty::EASY: {
+                out = 8;
+            }
+                break;
+            case Difficulty::NORMAL: {
+                out = 15;
+            }
+                break;
+            case Difficulty::MEDIUM: {
+                out = 18;
+            }
+                break;
+            case Difficulty::HARD: {
+                out =20;
+            }
+                break;
+            case Difficulty::IMPOSSIBLE: {
+                out =65;
+            }
+                break;
+
+        }
+    }
+
+    if (IsKeyPressed(KEY_A)){
+        if (diff != Difficulty::EASY){
+            diff = (Difficulty) ((int)diff - 1);
+        }
+    }
+
+
+    if (IsKeyPressed(KEY_D)){
+        if (diff !=Difficulty::IMPOSSIBLE){
+            diff = (Difficulty) ((int)diff + 1);
+        }
+    }
+
+
+    BeginDrawing();
+    ClearBackground(SKYBLUE);
+    DrawText("Main Menu",0,0,32,YELLOW);
+
+    switch (diff){
+        case Difficulty::EASY: {
+            DrawText("Easy",0,32,32,YELLOW);
+        }
+            break;
+        case Difficulty::NORMAL: {
+            DrawText("Normal",0,32,32,YELLOW);
+        }
+            break;
+        case Difficulty::MEDIUM: {
+            DrawText("Medium",0,32,32,YELLOW);
+        }
+            break;
+        case Difficulty::HARD: {
+            DrawText("Hard",0,32,32,YELLOW);
+        }
+            break;
+        case Difficulty::IMPOSSIBLE: {
+            DrawText("Impossible",0,32,32,YELLOW);
+        }
+            break;
+
+    }
+
+    EndDrawing();
+
+
+    return out;
+}
+
 
 int main(){
 
@@ -507,7 +593,7 @@ int main(){
     int high = 0;
     int wineCooldown = 0;
 
-    bool menuflag = true;
+    bool menuflag = false;
 
     double time = GetTime();
     int elaspedframe = 1;
@@ -515,15 +601,41 @@ int main(){
     RenderTexture2D renderTexture = LoadRenderTexture(SCREENWIDTH, SCREENHEIGHT);
     Texture2D background = LoadTexture("assets/Background_Plate_without_grain.png");
 
+    int scale =-1;
+    Difficulty difficulty = Difficulty::NORMAL;
 
     while (!WindowShouldClose())
     {
 
 
 
+
             elaspedframe = 0;
             elaspedframe = (GetTime()-time)*60;
             time = GetTime();
+
+
+        if (scale == -1){
+            scale = main_menu(difficulty);
+            if (scale != -1){
+                for (int i = 0; i < attacks.size(); i++) {
+                    delete attacks[i];
+                }
+                attacks.clear();
+                menuflag = false;
+                attackTimerMax = 65;
+                clock = 0;
+                player.totalElasped = 0;
+                player.resetPlayer();
+                wineCooldown = 0;
+                if(wineSplater != nullptr){
+                    delete wineSplater;
+                    wineSplater = nullptr;
+                }
+            }
+            continue;
+        }
+
 
             UpdateMusicStream(Track1);
 
@@ -563,9 +675,13 @@ int main(){
 
             clock+=elaspedframe;
 
-            if (clock % 300 == 0) {
-                attackTimerMax-=elaspedframe;
-            }
+            attackTimerMax = -scale*std::log((float)clock/60.0f )/std::log(10)+65;
+
+//            if (clock % scale == 0) {
+//
+//
+//                attackTimerMax== ;
+//            }
 
 
             attackTimer+=elaspedframe;
@@ -651,7 +767,7 @@ int main(){
             DrawText(("Time: " + std::to_string(clock / 60)).c_str(), 10, 34, 24, DARKGRAY);
             DrawText(("High: " + std::to_string(high / 60)).c_str(), 10, 56, 24, DARKGRAY);
 
-            DrawText(("Dash Cooldown: " + std::to_string((float)player.getDashCooldown()/60)).c_str(), 10, 94, 24, DARKGRAY);
+            DrawText(("Attack timer max:" + std::to_string((attackTimerMax))).c_str(), 10, 94, 24, DARKGRAY);
 
             EndTextureMode();
 
