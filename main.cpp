@@ -570,6 +570,7 @@ int main_menu(Difficulty& diff){
                 break;
 
         }
+
     }
 
 
@@ -722,6 +723,8 @@ int main(){
                     wineSplater = nullptr;
                 }
                 hasAttack = false;
+                StopMusicStream(Track2); // stops menu music
+                PlayMusicStream(Track1); // starts playing game music after game over
             } else {
                 continue;
 
@@ -787,6 +790,8 @@ int main(){
 
             if (collied) {
                 menuflag = true;
+                StopMusicStream(Track1); // stops game music
+                PlayMusicStream(Track2); // starts playing menu music on game over
             }
 
 
