@@ -12,7 +12,14 @@
 
     .cheese {
       font-family:myFirstFont;
-      color: #391513;
+      font-size: 16px;
+      color: #FF7700FF;
+      background: #203e48;
+      margin-top: 5px;
+      border: solid 2px #ff7700 ;
+      border-radius: 5px;
+      padding: 4px;
+      box-shadow: 2px 5px #360b0b;
     }
 
     .emscripten { padding-right: 0; display: block; }
@@ -23,8 +30,8 @@
     canvas.emscripten { border: 0px none; background-color: black; }
 
     .spinner {
-      height: 50px;
-      width: 50px;
+      height: 350px;
+      width: 350px;
       margin: 0px auto;
       -webkit-animation: rotation .8s linear infinite;
       -moz-animation: rotation .8s linear infinite;
@@ -54,6 +61,12 @@
       to {transform: rotate(360deg);}
     }
 
+    body {
+      background-image: url("low_poly_background.png");
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
   </style>
 </head>
 <body>
@@ -63,11 +76,11 @@
 <div class="emscripten">
   <progress value="0" max="100" id="progress" hidden=1></progress>
 </div>
-<div class="emscripten_border">
+<!--<div class="emscripten_border">-->
   <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
-</div>
+<!--</div>-->
 <div class="emscripten">
-  <input type="checkbox" id="resize"> <span class = "cheese">Stretch to fit</span>
+<span class = "cheese">   <input type="checkbox" id="resize">  Stretch to fit</span>
   <input type="checkbox" id="pointerLock" checked hidden="true">
   &nbsp;&nbsp;&nbsp;
   <input class = "cheese" type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked,

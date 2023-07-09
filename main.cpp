@@ -858,11 +858,11 @@ int main(){
                 attacks[i]->draw();
             }
 
-            DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
-            DrawText(("Time: " + std::to_string(clock / 60)).c_str(), 10, 34, 24, DARKGRAY);
-            DrawText(("High: " + std::to_string(high / 60)).c_str(), 10, 56, 24, DARKGRAY);
-
-            DrawText(("Attack timer max:" + std::to_string((attackTimerMax))).c_str(), 10, 94, 24, DARKGRAY);
+//            DrawText("Move the player using the WASD keys", 10, 10, 24, DARKGRAY);
+//            DrawText(("Time: " + std::to_string(clock / 60)).c_str(), 10, 34, 24, DARKGRAY);
+//            DrawText(("High: " + std::to_string(high / 60)).c_str(), 10, 56, 24, DARKGRAY);
+//
+//            DrawText(("Attack timer max:" + std::to_string((attackTimerMax))).c_str(), 10, 94, 24, DARKGRAY);
 
             EndTextureMode();
 
