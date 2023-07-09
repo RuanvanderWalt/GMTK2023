@@ -19,6 +19,9 @@ Texture2D wineSmall;
 Texture2D wineLarge;
 Texture2D waring;
 Texture2D dashTexture;
+Texture2D tutorial;
+Texture2D wine;
+Texture2D knifeFlat;
 
 class Player{
 private:
@@ -569,6 +572,9 @@ int main(){
     waring = LoadTexture("assets/Slash_effect.png");
     dashTexture = LoadTexture("assets/dash_indicator.png");
     wineLarge = LoadTexture( "assets/wine_large.png");
+    tutorial = LoadTexture("assets/menu.png");
+    wine = LoadTexture("assets/wine_bottle.png");
+    knifeFlat = LoadTexture( "assets/knifeStatic.png");
 
 
     Music Track1 = LoadMusicStream("assets/2023 game jam music v2.wav");
@@ -748,8 +754,12 @@ int main(){
 
             ClearBackground(RAYWHITE);
 
-            DrawTextureRec(background,Rectangle{0,0,800,450,},Vector2 {0,0},WHITE);
 
+
+            DrawTextureRec(background,Rectangle{0,0,800,450,},Vector2 {0,0},WHITE);
+            DrawTextureRec(tutorial, Rectangle {0,0,64,208},Vector2{XUPPER+8,YLOWER+8},WHITE);
+            DrawTextureRec(wine, Rectangle {0,0,64,208},Vector2{XUPPER+8,YLOWER+208-8},WHITE);
+            DrawTextureRec(knifeFlat,Rectangle {0,0,32,192},Vector2{24,YLOWER+208},WHITE);
 
 //            DrawRectangleLines(80, 33, 640, 384, BLACK);
 //            DrawRectangleLines(100, 53, 620, 364, RED);
