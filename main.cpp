@@ -26,6 +26,7 @@ Texture2D knifeFlat;
 Texture2D tutorial2;
 Texture2D mainMenu;
 Texture2D difficulties;
+Texture2D hud;
 
 class Player{
 private:
@@ -638,6 +639,8 @@ int main(){
     wine = LoadTexture("assets/wine_bottle.png");
     knifeFlat = LoadTexture( "assets/knifeStatic.png");
     tutorial2 = LoadTexture("assets/menu_controller.png");
+    hud = LoadTexture("assets/stove_hud.png");
+
     mainMenu = LoadTexture("assets/MENU_.png");
     difficulties = LoadTexture("assets/difficulty_names.png");
 
@@ -840,8 +843,16 @@ int main(){
 
             DrawTextureRec(background,Rectangle{0,0,800,450,},Vector2 {0,0},WHITE);
             DrawTextureRec(tutorial, Rectangle {0,0,64,208},Vector2{XUPPER+8,YLOWER+8},WHITE);
-            DrawTextureRec(wine, Rectangle {0,0,64,208},Vector2{XUPPER+8,YLOWER+208-8},WHITE);
+            //DrawTextureRec(wine, Rectangle {0,0,64,208},Vector2{XUPPER+8,YLOWER+208-8},WHITE);
+            DrawTexturePro(wine, Rectangle {0,0,64,208}, Rectangle {XUPPER+8,YLOWER+208-8,64,208}, Vector2 {0,0},0,WHITE);
+
             DrawTextureRec(tutorial2, Rectangle {0,0,64,208},Vector2{8,YLOWER+8},WHITE);
+
+
+            DrawTextureRec(hud,Rectangle {0,0,674,32},Vector2 {XLOWER-16,0},WHITE);
+            DrawText(std::to_string(clock/60).c_str(),152-16,5,16,Color {0,213,255,255});
+            DrawText(std::to_string(high/60).c_str(),682-16,5,16,Color {0,213,255,255});
+
     //A change
 
         if (!hasAttack){
