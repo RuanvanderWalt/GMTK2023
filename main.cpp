@@ -572,14 +572,17 @@ int main(){
 
 
     Music Track1 = LoadMusicStream("assets/2023 game jam music v2.wav");
+    Music Track2 = LoadMusicStream("assets/2023_game_jam_music_menu.wav");
     splat = LoadSound("assets/wine_splat.wav");
     dash = LoadSound("assets/2023_game_jam_dash_1.wav");
     cut= LoadSound("assets/knife_cut_sound_5.wav");
     SetSoundVolume(cut,0.5);
     SetSoundVolume(splat,1.5);
 
+    PlayMusicStream(Track2);
 
-    PlayMusicStream(Track1);
+
+
     Player player = Player();
 
     SetTargetFPS(60);
@@ -606,8 +609,8 @@ int main(){
 
     while (!WindowShouldClose())
     {
-
-
+        UpdateMusicStream(Track1);
+        UpdateMusicStream(Track2);
 
 
             elaspedframe = 0;
@@ -616,6 +619,7 @@ int main(){
 
 
         if (scale == -1){
+
             scale = main_menu(difficulty);
             if (scale != -1){
                 for (int i = 0; i < attacks.size(); i++) {
@@ -632,12 +636,14 @@ int main(){
                     delete wineSplater;
                     wineSplater = nullptr;
                 }
+                StopMusicStream(Track2);
+                PlayMusicStream(Track1);
             }
             continue;
         }
 
 
-            UpdateMusicStream(Track1);
+
 
             if (wineSplater == nullptr && !menuflag) {
                 wineCooldown+=elaspedframe;
