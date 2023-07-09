@@ -680,7 +680,7 @@ int main(){
 
         clock+=elaspedframe;
 
-        DrawText(std::to_string(GetGamepadButtonPressed()).c_str(), 10, 70, 24, DARKGRAY);
+        //DrawText(std::to_string(GetGamepadButtonPressed()).c_str(), 10, 70, 24, DARKGRAY);
 
         attackTimerMax = -(scale*(std::log((float)clock/60.0f )/std::log(10)))+65;
 
