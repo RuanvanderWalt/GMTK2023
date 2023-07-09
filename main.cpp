@@ -26,6 +26,7 @@ Texture2D knifeFlat;
 Texture2D tutorial2;
 Texture2D mainMenu;
 Texture2D difficulties;
+Texture2D endScreen;
 Texture2D hud;
 
 class Player{
@@ -489,12 +490,14 @@ bool menu(int& clock,int& high){
     }
 
     BeginDrawing();
-    ClearBackground(SKYBLUE);
+    //ClearBackground(SKYBLUE);
+
+    DrawTexturePro(endScreen , (Rectangle){0, 0, 800, 450}, (Rectangle) {0, 0, (float) GetScreenWidth(), (float)GetScreenHeight()}, Vector2 {0, 0}, 0, WHITE);
 
 
-    if (high != 0){
+    /*if (high != 0){
         DrawText(("High Score: "+std::to_string(high/60)).c_str(), 200, 34, 24, ORANGE);
-    }
+    }*/
     //DrawText(std::to_string(GetGamepadAxisMovement(0,0)).c_str(), 10, 56, 24, DARKGRAY);
     //DrawText(std::to_string(GetGamepadAxisMovement(0,1)).c_str(), 10, 70, 24, DARKGRAY);
 
@@ -643,6 +646,7 @@ int main(){
 
     mainMenu = LoadTexture("assets/MENU_.png");
     difficulties = LoadTexture("assets/difficulty_names.png");
+    endScreen = LoadTexture("assets/End_Screen.png");
 
 
     Music Track1 = LoadMusicStream("assets/2023 game jam music v2.wav");
