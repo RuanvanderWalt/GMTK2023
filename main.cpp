@@ -693,7 +693,9 @@ int main(){
         UpdateMusicStream(Track2);
 
 
-
+        elaspedframe = 0;
+        elaspedframe = (GetTime()-time)*60;
+        time = GetTime();
 
         if (scale == -1){
             scale = main_menu(difficulty);
@@ -744,9 +746,7 @@ int main(){
             }
         }
 
-        elaspedframe = 0;
-        elaspedframe = (GetTime()-time)*60;
-        time = GetTime();
+
 
         clock+=elaspedframe;
 
