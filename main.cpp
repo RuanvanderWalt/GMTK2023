@@ -652,6 +652,8 @@ int main(){
     int high = 0;
     int wineCooldown = 0;
 
+    bool hasAttack = false;
+
     bool menuflag = false;
 
     double time = GetTime();
@@ -669,13 +671,15 @@ int main(){
         UpdateMusicStream(Track2);
 
 
-            elaspedframe = 0;
-            elaspedframe = (GetTime()-time)*60;
-            time = GetTime();
+        elaspedframe = 0;
+        elaspedframe = (GetTime()-time)*60;
+        time = GetTime();
 
+        clock+=elaspedframe;
+
+        attackTimerMax = -scale*std::log((float)clock/60.0f )/std::log(10)+65;
 
         if (scale == -1){
-
             scale = main_menu(difficulty);
             if (scale != -1){
                 for (int i = 0; i < attacks.size(); i++) {
@@ -699,6 +703,29 @@ int main(){
         }
 
 
+        if (menuflag) {
+            if (menu(clock, high)) {
+                for (int i = 0; i < attacks.size(); i++) {
+                    delete attacks[i];
+                }
+                attacks.clear();
+                menuflag = false;
+                attackTimerMax = 65;
+                clock = 0;
+                player.totalElasped = 0;
+                player.resetPlayer();
+                wineCooldown = 0;
+                if(wineSplater != nullptr){
+                    delete wineSplater;
+                    wineSplater = nullptr;
+                }
+                hasAttack = false;
+            } else {
+                continue;
+
+            }
+        }
+
 
 
             if (wineSplater == nullptr && !menuflag) {
@@ -714,30 +741,10 @@ int main(){
                 high = clock;
             }
 
-            if (menuflag) {
-                if (menu(clock, high)) {
-                    for (int i = 0; i < attacks.size(); i++) {
-                        delete attacks[i];
-                    }
-                    attacks.clear();
-                    menuflag = false;
-                    attackTimerMax = 65;
-                    clock = 0;
-                    player.totalElasped = 0;
-                    player.resetPlayer();
-                    wineCooldown = 0;
-                    if(wineSplater != nullptr){
-                        delete wineSplater;
-                        wineSplater = nullptr;
-                    }
-                }
-                continue;
-            }
 
 
-            clock+=elaspedframe;
 
-            attackTimerMax = -scale*std::log((float)clock/60.0f )/std::log(10)+65;
+
 
 //            if (clock % scale == 0) {
 //
@@ -764,6 +771,7 @@ int main(){
             bool collied = false;
 
             for (int i = 0; i < attacks.size(); i++) {
+                hasAttack = true;
                 attacks[i]->update(elaspedframe);
                 if (attacks[i]->cooldown < -30) {
                     attacks.erase(std::next(attacks.begin(), i));
@@ -809,7 +817,10 @@ int main(){
             DrawTextureRec(background,Rectangle{0,0,800,450,},Vector2 {0,0},WHITE);
             DrawTextureRec(tutorial, Rectangle {0,0,64,208},Vector2{XUPPER+8,YLOWER+8},WHITE);
             DrawTextureRec(wine, Rectangle {0,0,64,208},Vector2{XUPPER+8,YLOWER+208-8},WHITE);
-            DrawTextureRec(knifeFlat,Rectangle {0,0,32,192},Vector2{24,YLOWER+208},WHITE);
+
+            if (!hasAttack){
+                DrawTextureRec(knifeFlat,Rectangle {0,0,32,192},Vector2{24-(float)attackTimer,YLOWER+208},WHITE);
+            }
 
 //            DrawRectangleLines(80, 33, 640, 384, BLACK);
 //            DrawRectangleLines(100, 53, 620, 364, RED);
