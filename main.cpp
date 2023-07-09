@@ -24,6 +24,8 @@ Texture2D tutorial;
 Texture2D wine;
 Texture2D knifeFlat;
 Texture2D tutorial2;
+Texture2D mainMenu;
+Texture2D difficulties;
 
 class Player{
 private:
@@ -578,28 +580,33 @@ int main_menu(Difficulty& diff){
 
 
     BeginDrawing();
-    ClearBackground(SKYBLUE);
-    DrawText("Main Menu",0,0,32,YELLOW);
+    DrawTexturePro(mainMenu, (Rectangle){0, 0, 800, 450}, (Rectangle) {0, 0, (float) GetScreenWidth(), (float)GetScreenHeight()}, Vector2 {0, 0}, 0, WHITE);
+    //DrawText("Main Menu",0,0,32,YELLOW);
 
     switch (diff){
         case Difficulty::EASY: {
-            DrawText("Easy",0,32,32,YELLOW);
+            DrawTexturePro(difficulties, (Rectangle){0, 0, 120, 32}, (Rectangle){(float)(340*GetScreenWidth())/800, (float) (339*GetScreenHeight())/450, (float) (120*GetScreenWidth())/800, (float) (32*GetScreenHeight())/(450)}, (Vector2) {0, 0}, 0, WHITE);
+            //DrawText("Easy",0,32,32,YELLOW);
         }
             break;
         case Difficulty::NORMAL: {
-            DrawText("Normal",0,32,32,YELLOW);
+            DrawTexturePro(difficulties, (Rectangle){240, 0, 120, 32}, (Rectangle){(float)(340*GetScreenWidth())/800, (float) (339*GetScreenHeight())/450, (float) (120*GetScreenWidth())/800, (float) (32*GetScreenHeight())/(450)}, (Vector2) {0, 0}, 0, WHITE);
+            //DrawText("Normal",0,32,32,YELLOW);
         }
             break;
         case Difficulty::MEDIUM: {
-            DrawText("Medium",0,32,32,YELLOW);
+            DrawTexturePro(difficulties, (Rectangle){120, 0, 120, 32}, (Rectangle){(float)(340*GetScreenWidth())/800, (float) (339*GetScreenHeight())/450, (float) (120*GetScreenWidth())/800, (float) (32*GetScreenHeight())/(450)}, (Vector2) {0, 0}, 0, WHITE);
+            //DrawText("Medium",0,32,32,YELLOW);
         }
             break;
         case Difficulty::HARD: {
-            DrawText("Hard",0,32,32,YELLOW);
+            DrawTexturePro(difficulties, (Rectangle){360, 0, 120, 32}, (Rectangle){(float)(340*GetScreenWidth())/800, (float) (339*GetScreenHeight())/450, (float) (120*GetScreenWidth())/800, (float) (32*GetScreenHeight())/(450)}, (Vector2) {0, 0}, 0, WHITE);
+            //DrawText("Hard",0,32,32,YELLOW);
         }
             break;
         case Difficulty::IMPOSSIBLE: {
-            DrawText("Impossible",0,32,32,YELLOW);
+            DrawTexturePro(difficulties, (Rectangle){480, 0, 120, 32}, (Rectangle){(float)(340*GetScreenWidth())/800, (float) (339*GetScreenHeight())/450, (float) (120*GetScreenWidth())/800, (float) (32*GetScreenHeight())/(450)}, (Vector2) {0, 0}, 0, WHITE);
+            //DrawText("Impossible",0,32,32,YELLOW);
         }
             break;
 
@@ -631,7 +638,8 @@ int main(){
     wine = LoadTexture("assets/wine_bottle.png");
     knifeFlat = LoadTexture( "assets/knifeStatic.png");
     tutorial2 = LoadTexture("assets/menu_controller.png");
-
+    mainMenu = LoadTexture("assets/MENU_.png");
+    difficulties = LoadTexture("assets/difficulty_names.png");
 
 
     Music Track1 = LoadMusicStream("assets/2023 game jam music v2.wav");
