@@ -640,6 +640,7 @@ int main(){
     cheese = LoadSound("assets/2023_game_jam_MMM_CHEESE.wav");
     SetSoundVolume(cut,0.5);
     SetSoundVolume(splat,1.5);
+    SetMusicVolume(Track2,0.5);
 
     PlayMusicStream(Track2);
 
