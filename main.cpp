@@ -739,7 +739,7 @@ int main(){
                 }
                 hasAttack = false;
                 StopMusicStream(Track2); // stops menu music
-                PlayMusicStream(Track1); // starts playing game music after game over
+                ResumeMusicStream(Track1); // starts playing game music after game over
             } else {
                 continue;
 
@@ -814,7 +814,7 @@ int main(){
             if (collied) {
                 menuflag = true;
                 PlaySound(cheese);
-                StopMusicStream(Track1); // stops game music
+                PauseMusicStream(Track1); // stops game music
                 PlayMusicStream(Track2); // starts playing menu music on game over
             }
 
