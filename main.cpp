@@ -22,6 +22,7 @@ Texture2D dashTexture;
 Texture2D tutorial;
 Texture2D wine;
 Texture2D knifeFlat;
+Texture2D tutorial2;
 
 class Player{
 private:
@@ -625,6 +626,7 @@ int main(){
     tutorial = LoadTexture("assets/menu.png");
     wine = LoadTexture("assets/wine_bottle.png");
     knifeFlat = LoadTexture( "assets/knifeStatic.png");
+    tutorial2 = LoadTexture("assets/menu_controller.png");
 
 
     Music Track1 = LoadMusicStream("assets/2023 game jam music v2.wav");
@@ -817,8 +819,10 @@ int main(){
             DrawTextureRec(background,Rectangle{0,0,800,450,},Vector2 {0,0},WHITE);
             DrawTextureRec(tutorial, Rectangle {0,0,64,208},Vector2{XUPPER+8,YLOWER+8},WHITE);
             DrawTextureRec(wine, Rectangle {0,0,64,208},Vector2{XUPPER+8,YLOWER+208-8},WHITE);
+            DrawTextureRec(tutorial2, Rectangle {0,0,64,208},Vector2{8,YLOWER+8},WHITE);
 
-            if (!hasAttack){
+
+        if (!hasAttack){
                 DrawTextureRec(knifeFlat,Rectangle {0,0,32,192},Vector2{24-(float)attackTimer,YLOWER+208},WHITE);
             }
 
