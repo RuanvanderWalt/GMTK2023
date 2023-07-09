@@ -109,6 +109,13 @@ public:
                     dashNext = true;
                     PlaySound(dash);
                 }
+                if (IsGamepadAvailable(0)){
+                    if (IsGamepadButtonDown(0,GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
+                        dashNext = true;
+                        PlaySound(dash);
+                    }
+                }
+
             }
 
 
@@ -125,6 +132,9 @@ public:
                 tempVect.x = tempVect.x + (1.95f - coefFriction);
             }
 
+
+
+
             Vector2 tempAcc = tempVect;
 
             if(IsKeyUp(KEY_W) && IsKeyUp(KEY_S) && currSpeed.y < 0){
@@ -138,6 +148,14 @@ public:
             }
             if(IsKeyUp(KEY_D) && IsKeyUp(KEY_A) && currSpeed.x > 0){
                 tempAcc.x -= coefFriction;
+            }
+
+            if (IsGamepadAvailable(0)){
+                Vector2 gamepadAxis {GetGamepadAxisMovement(0,0),GetGamepadAxisMovement(0,1)};
+                if (Vector2Length(gamepadAxis) !=0){
+                    tempAcc = Vector2Scale(gamepadAxis,(1.95f - coefFriction));
+                    tempVect =tempAcc;
+                }
             }
 
             tempAcc = Vector2Normalize(tempAcc);
@@ -459,6 +477,12 @@ bool menu(int& clock,int& high){
         out =true;
     }
 
+    if (IsGamepadAvailable(0)){
+        if (IsGamepadButtonPressed(0,GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
+            out =true;
+        }
+    }
+
     BeginDrawing();
     ClearBackground(SKYBLUE);
 
@@ -486,6 +510,41 @@ int main_menu(Difficulty& diff){
     int out = -1;
     bool done = IsKeyPressed(KEY_ENTER);
 
+    if (IsKeyPressed(KEY_A)){
+        if (diff != Difficulty::EASY){
+            diff = (Difficulty) ((int)diff - 1);
+        }
+    }
+
+
+    if (IsKeyPressed(KEY_D)){
+        if (diff !=Difficulty::IMPOSSIBLE){
+            diff = (Difficulty) ((int)diff + 1);
+        }
+    }
+
+
+    if (IsGamepadAvailable(0)){
+        if (IsGamepadButtonPressed(0,GAMEPAD_BUTTON_LEFT_TRIGGER_1)){
+            if (diff != Difficulty::EASY){
+                diff = (Difficulty) ((int)diff - 1);
+            }
+        }
+        if (IsGamepadButtonPressed(0,GAMEPAD_BUTTON_RIGHT_TRIGGER_1)){
+            if (diff !=Difficulty::IMPOSSIBLE){
+                diff = (Difficulty) ((int)diff + 1);
+            }
+        }
+
+        if (!done){
+            if (IsGamepadButtonPressed(0,GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
+                done = true;
+            }
+        }
+
+    }
+
+
     if (done){
         switch (diff){
             case Difficulty::EASY: {
@@ -512,18 +571,7 @@ int main_menu(Difficulty& diff){
         }
     }
 
-    if (IsKeyPressed(KEY_A)){
-        if (diff != Difficulty::EASY){
-            diff = (Difficulty) ((int)diff - 1);
-        }
-    }
 
-
-    if (IsKeyPressed(KEY_D)){
-        if (diff !=Difficulty::IMPOSSIBLE){
-            diff = (Difficulty) ((int)diff + 1);
-        }
-    }
 
 
     BeginDrawing();
