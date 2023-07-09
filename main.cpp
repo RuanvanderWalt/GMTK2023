@@ -614,7 +614,9 @@ int main_menu(Difficulty& diff){
 
 int main(){
 
-    InitWindow(SCREENWIDTH, SCREENHEIGHT, "raylib [core] example - keyboard input");
+    InitWindow(SCREENWIDTH, SCREENHEIGHT, "Say Cheese, Brie!");
+    Image windowIcon = LoadImage("assets/cheese_icon.png");
+    SetWindowIcon(windowIcon);
 
     InitAudioDevice();
 
